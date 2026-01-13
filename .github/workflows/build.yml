@@ -66,6 +66,7 @@ jobs:
         echo "KSU Commit      : ${{ inputs.ksu_commit || 'Default' }}"
         echo "SUSFS Enabled   : ${{ inputs.susfs_enabled }}"
         echo "Variant         : ${{ inputs.variant || 'Standard' }}"
+        echo "Build Time      : $(date +"%Y-%m-%d %H:%M:%S %Z")"
         echo "========================================"
 
     - name: Free Disk Space
@@ -139,7 +140,13 @@ jobs:
         echo "ACTUAL_SUBLEVEL=$ACTUAL_SUBLEVEL" >> $GITHUB_ENV
         echo "ARTIFACT_BASE=$ARTIFACT_BASE" >> $GITHUB_ENV
         echo "FILE_NAME=$ARTIFACT_BASE" >> $GITHUB_ENV
+        # ... existing code ...
 
+        # ... existing code ...
+        TIMESTAMP=$(date +"%Y%m%d-%H%M")
+        ARTIFACT_BASE="${ARTIFACT_BASE}-${TIMESTAMP}"
+        # ... rest of code ...
+        
     - name: Apply glibc 2.38 Compatibility Fix
       run: |
         # Use ACTUAL_SUBLEVEL for LTS builds, otherwise use the input sub_level
@@ -744,6 +751,13 @@ jobs:
               sed -i '/^CONFIG_LOCALVERSION=/ s/="\([^"]*\)"/="${{ inputs.version }}"/' ./common/arch/arm64/configs/gki_defconfig
             fi
           fi
+
+          - name: Set Kernel Build Information
+           working-directory: ${{ env.KERNEL_ROOT }}
+           run: |
+           # Update kernel version with timestamp
+           TIMESTAMP=$(date +"%y%m%d.%H%M")
+           sed -i '$s|echo "$res"|echo "$res-'$TIMESTAMP'"|' ./common/scripts/setlocalversion
 
     - name: Change Kernel Name
       working-directory: ${{ env.KERNEL_ROOT }}
