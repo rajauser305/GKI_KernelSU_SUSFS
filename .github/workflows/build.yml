@@ -776,8 +776,8 @@ jobs:
     
           # Juga update di init/version.c jika ada
           if [ -f "./common/init/version.c" ]; then
-          sed -i "s/\"build-user\"/\"YourCustomUser\"/g" ./common/init/version.c
-          sed -i "s/\"build-host\"/\"YourCustomHost\"/g" ./common/init/version.c
+          sed -i "s/\"build-user\"/\"FUCKYOU\"/g" ./common/init/version.c
+          sed -i "s/\"build-host\"/\"BITCH\"/g" ./common/init/version.c
           fi
     
           if [ -f "build/build.sh" ]; then
