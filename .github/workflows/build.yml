@@ -728,6 +728,12 @@ jobs:
         fi
         if [ -f "build/build.sh" ]; then
 
+        
+        - name: 配置内核名称
+        working-directory: ${{ env.KERNEL_ROOT }}
+        run: |
+          echo "更改为配置目录: $CONFIG..."
+          cd "$CONFIG"
         # 构建时间
           BUILD_TIME=$(TZ='Asia/jakarta' date +"%Y%m%d%H%M")
           CURRENT_TIME=$(TZ='Asia/jakarta' date +"%a %b %d %H:%M:%S UTC+8 %Y")
