@@ -812,7 +812,7 @@ jobs:
        KERNEL_BUILD_TIMESTAMP: ${{ env.KBUILD_BUILD_TIMESTAMP }}
        KERNEL_BUILD_USER: ${{ env.KBUILD_BUILD_USER }}
        KERNEL_BUILD_HOST: ${{ env.KBUILD_BUILD_HOST }}
-       run: |
+      run: |
         set -ex
     
         # Debug: Tampilkan environment variables
