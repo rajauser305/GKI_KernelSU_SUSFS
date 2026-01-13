@@ -762,7 +762,7 @@ jobs:
     - name: Change Kernel Name
       working-directory: ${{ env.KERNEL_ROOT }}
       run: |
-        #WILD to Kernel Version (replace last instance only)
+        #KONTOL to Kernel Version (replace last instance only)
         if [[ "${{ inputs.kernel_version }}" == "5."* ]] || [[ "${{ inputs.kernel_version }}" == "6.1" ]]; then
           case ${{ matrix.build_type }} in
             TheWildJames)
@@ -775,7 +775,7 @@ jobs:
               perl -i -0777 -pe 's/(.*)echo "\$res"/$1echo "\$res-Wild-Hakan"/s' ./common/scripts/setlocalversion
               ;;
             *)
-              perl -i -0777 -pe 's/(.*)echo "\$res"/$1echo "\$res-FUCK-YOU-BITCH"/s' ./common/scripts/setlocalversion
+            perl -i -0777 -pe 's/(.*)echo "\$res"/$1echo "\$res-FUCK-YOU-BITCH-'"$TIMESTAMP"'"/s' ./common/scripts/setlocalversion
               ;;
           esac
         else
@@ -784,26 +784,6 @@ jobs:
         if [ -f "build/build.sh" ]; then
 
         
-        - name: 配置内核名称
-        working-directory: ${{ env.KERNEL_ROOT }}
-        run: |
-          echo "更改为配置目录: $CONFIG..."
-          cd "$CONFIG"
-        # 构建时间
-          BUILD_TIME=$(TZ='Asia/jakarta' date +"%Y%m%d%H%M")
-          CURRENT_TIME=$(TZ='Asia/jakarta' date +"%a %b %d %H:%M:%S UTC+8 %Y")
-          
-          if [ ! -z ${{ inputs.version }} ]; then
-            echo "版本号不为空"
-            sed -i '$s|echo "\$res"|echo "${{ inputs.version }}"|' ./common/scripts/setlocalversion
-          else
-            echo "版本号为空，使用默认值"
-            sed -i '$s|echo "\$res"|echo "\$res-${{ github.repository_owner }}-'"$BUILD_TIME"'"|' ./common/scripts/setlocalversion
-          fi
-
-          echo "CURRENT_TIME=$CURRENT_TIME"
-          perl -pi -e "s{UTS_VERSION=\"\\\$\(echo \\\$UTS_VERSION \\\$CONFIG_FLAGS \\\$TIMESTAMP \\| cut -b -\\\$UTS_LEN\)\"}{UTS_VERSION=\"#1 SMP PREEMPT $CURRENT_TIME\"}" ./common/scripts/mkcompile_h
-
 
           #Remove Dirty Flag
           sed -i 's/-dirty//' ./common/scripts/setlocalversion
