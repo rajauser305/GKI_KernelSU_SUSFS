@@ -459,20 +459,7 @@ jobs:
         sed -i '/^config LSM$/,/^help$/{ /^[[:space:]]*default/ { /baseband_guard/! s/lockdown/lockdown,baseband_guard/ } }' common/security/Kconfig
 
 
-    - name: 添加bbr和westwood支持(默认不开启)
-      if: true
-      working-directory: ${{ env.KERNEL_ROOT }}
-      run: |
-          cd "$CONFIG"
-          echo "启用 BBR..."
-          echo "CONFIG_TCP_CONG_ADVANCED=y" >> ./common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_TCP_CONG_BBR=y" >> ./common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_NET_SCH_FQ=y" >> ./common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_TCP_CONG_BIC=n" >> ./common/arch/arm64/configs/gki_defconfig
-          echo "启用 Westwood..."
-          echo "CONFIG_TCP_CONG_WESTWOOD=y" >> ./common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_TCP_CONG_HTCP=n" >> ./common/arch/arm64/configs/gki_defconfig
-
+    
     - name: 添加代理性能优化
       if: true
       working-directory: ${{ env.KERNEL_ROOT }}
