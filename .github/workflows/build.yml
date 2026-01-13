@@ -789,7 +789,7 @@ jobs:
             # Export environment variables untuk kernel build
             # Variabel ini akan digunakan oleh build system kernel
             export KBUILD_BUILD_TIMESTAMP="${{ env.KBUILD_BUILD_TIMESTAMP || '$(date +"%a %b %d %H:%M:%S %Z %Y")' }}"
-            export KBUILD_BUILD_USER="${{ env.KBUILD_BUILD_USER || 'WildKernel-Builder' }}"
+            export KBUILD_BUILD_USER="${{ env.KBUILD_BUILD_USER || 'FUCKYOUBITCH-Builder' }}"
             export KBUILD_BUILD_HOST="${{ env.KBUILD_BUILD_HOST || 'GitHub-Actions-CI' }}"
     
             echo "Final build environment:"
