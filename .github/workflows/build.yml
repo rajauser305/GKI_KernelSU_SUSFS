@@ -727,8 +727,8 @@ jobs:
     
           # Simpan ke environment untuk build step berikutnya
           echo "KBUILD_BUILD_TIMESTAMP=$BUILD_DATE" >> $GITHUB_ENV
-          echo "KBUILD_BUILD_USER=YourCustomUser" >> $GITHUB_ENV
-          echo "KBUILD_BUILD_HOST=YourCustomHost" >> $GITHUB_ENV
+          echo "KBUILD_BUILD_USER=FUCK-YOU" >> $GITHUB_ENV
+          echo "KBUILD_BUILD_HOST=NETANYAHU" >> $GITHUB_ENV
     
           echo "Build timestamp: $BUILD_DATE"
           echo "Kernel timestamp: $KERNEL_TIMESTAMP"
