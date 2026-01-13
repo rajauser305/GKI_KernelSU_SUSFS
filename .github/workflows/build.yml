@@ -722,8 +722,8 @@ jobs:
           BUILD_DATE=$(date +"%a %b %d %H:%M:%S %Z %Y")
     
           # SET BUILD USER DAN HOST LANGSUNG KE MAKE FILE
-          echo "Setting build user: FUCKYOU"
-          echo "Setting build host: BITCH"
+          echo "Setting build user: FUCK-YOU"
+          echo "Setting build host: NETANYAHU"
     
           # Simpan ke environment untuk build step berikutnya
           echo "KBUILD_BUILD_TIMESTAMP=$BUILD_DATE" >> $GITHUB_ENV
@@ -746,7 +746,7 @@ jobs:
           perl -i -0777 -pe 's/(.*)echo "\$res"/$1echo "\$res-Wild-Hakan-'"$KERNEL_TIMESTAMP"'"/s' ./common/scripts/setlocalversion
           ;;
           *)
-          perl -i -0777 -pe 's/(.*)echo "\$res"/$1echo "\$res-FUCK-TRUMP"/s' ./common/scripts/setlocalversion
+          perl -i -0777 -pe 's/(.*)echo "\$res"/$1echo "\$res-FUCK-YOU-TRUMP"/s' ./common/scripts/setlocalversion
            ;;
           esac
           else
@@ -757,17 +757,17 @@ jobs:
           # MENGUPDATE BUILD USER/HOST LANGSUNG DI MAKEFILE
           if [ -f "./common/Makefile" ]; then
           # Update KBUILD_BUILD_USER dan KBUILD_BUILD_HOST di Makefile
-          sed -i "s/^KBUILD_BUILD_USER.*/KBUILD_BUILD_USER := FUCKYOU/" ./common/Makefile
-          sed -i "s/^KBUILD_BUILD_HOST.*/KBUILD_BUILD_HOST := BITCH/" ./common/Makefile
+          sed -i "s/^KBUILD_BUILD_USER.*/KBUILD_BUILD_USER := FUCK-YOU/" ./common/Makefile
+          sed -i "s/^KBUILD_BUILD_HOST.*/KBUILD_BUILD_HOST := NETANYAHU/" ./common/Makefile
           sed -i "s/^KBUILD_BUILD_TIMESTAMP.*/KBUILD_BUILD_TIMESTAMP := $BUILD_DATE/" ./common/Makefile
       
           # Jika tidak ada, tambahkan
           if ! grep -q "^KBUILD_BUILD_USER" ./common/Makefile; then
           echo "" >> ./common/Makefile
-          echo "KBUILD_BUILD_USER := FUCKYOU" >> ./common/Makefile
+          echo "KBUILD_BUILD_USER := FUCK-YOU" >> ./common/Makefile
           fi
           if ! grep -q "^KBUILD_BUILD_HOST" ./common/Makefile; then
-          echo "KBUILD_BUILD_HOST := BITCH" >> ./common/Makefile
+          echo "KBUILD_BUILD_HOST := NETANYAHU" >> ./common/Makefile
           fi
           if ! grep -q "^KBUILD_BUILD_TIMESTAMP" ./common/Makefile; then
           echo "KBUILD_BUILD_TIMESTAMP := $BUILD_DATE" >> ./common/Makefile
@@ -804,18 +804,18 @@ jobs:
          # Export environment variables untuk kernel build
          # Variabel ini akan digunakan oleh build system kernel
          export KBUILD_BUILD_TIMESTAMP="${{ env.KBUILD_BUILD_TIMESTAMP || '$(date +"%a %b %d %H:%M:%S %Z %Y")' }}"
-         export KBUILD_BUILD_USER="FUCKYOU"
-         export KBUILD_BUILD_HOST="BITCH"
+         export KBUILD_BUILD_USER="FUCK-YOU"
+         export KBUILD_BUILD_HOST="NETANYAHU"
     
          echo "Final build environment:"
          echo "KBUILD_BUILD_TIMESTAMP=$KBUILD_BUILD_TIMESTAMP"
-         echo "KBUILD_BUILD_USER=FUCKYOU"
-         echo "KBUILD_BUILD_HOST=BITCH"
+         echo "KBUILD_BUILD_USER=FUCK-YOU"
+         echo "KBUILD_BUILD_HOST=NETANYAHU"
     
          # Export untuk step berikutnya (jika belum)
          echo "KBUILD_BUILD_TIMESTAMP=$KBUILD_BUILD_TIMESTAMP" >> $GITHUB_ENV
-         echo "KBUILD_BUILD_USER=FUCKYOU" >> $GITHUB_ENV
-         echo "KBUILD_BUILD_HOST=BITCH" >> $GITHUB_ENV
+         echo "KBUILD_BUILD_USER=FUCK-YOU" >> $GITHUB_ENV
+         echo "KBUILD_BUILD_HOST=NETANYAHU" >> $GITHUB_ENV
 
  
     - name: Build Kernel
