@@ -714,43 +714,7 @@ jobs:
           cat common/drivers/android/Makefile
         fi
 
-    - name: 配置内核名
-      working-directory: ${{ env.KERNEL_ROOT }}
-      run: |
-       echo "更改为配置目录: $CONFIG..."
-       cd "$CONFIG"
-          
-          # 构建时间
-          BUILD_TIME=$(TZ='Asia/jakarta' date +"%Y%m%d%H%M")
-          CURRENT_TIME=$(TZ='Asia/jakarta' date +"%a %b %d %H:%M:%S UTC+8 %Y")
-          
-          if [ ! -z ${{ inputs.version }} ]; then
-            echo "版本号不为空"
-            sed -i '$s|echo "\$res"|echo "${{ inputs.version }}"|' ./common/scripts/setlocalversion
-          else
-            echo "版本号为空，使用默认值"
-            sed -i '$s|echo "\$res"|echo "\$res-${{ github.repository_owner }}-'"$BUILD_TIME"'"|' ./common/scripts/setlocalversion
-          fi
 
-          echo "CURRENT_TIME=$CURRENT_TIME"
-          perl -pi -e "s{UTS_VERSION=\"\\\$\(echo \\\$UTS_VERSION \\\$CONFIG_FLAGS \\\$TIMESTAMP \\| cut -b -\\\$UTS_LEN\)\"}{UTS_VERSION=\"#1 SMP PREEMPT $CURRENT_TIME\"}" ./common/scripts/mkcompile_h
-
-          # Apply specific Makefile modification for kernel versions 6.1 and 6.6 only
-          if [ "${{ inputs.kernel_version }}" = "6.1" ] || [ "${{ inputs.kernel_version }}" = "6.6" ]; then
-            sed -i -e "s|\$(preempt-flag-y) \"\$(build-timestamp)\"|\$(preempt-flag-y) \"$CURRENT_TIME\"|" ./common/init/Makefile
-          fi
-          
-          if [ -f "build/build.sh" ]; then
-            sed -i 's/-dirty//' ./common/scripts/setlocalversion
-          else
-            sed -i '/^[[:space:]]*"protected_exports_list"[[:space:]]*:[[:space:]]*"android\/abi_gki_protected_exports_aarch64",$/d' ./common/BUILD.bazel
-            rm -rf ./common/android/abi_gki_protected_exports_*
-            sed -i "/stable_scmversion_cmd/s/-maybe-dirty//g" ./build/kernel/kleaf/impl/stamp.bzl
-            # sed -E -i '/^CONFIG_LOCALVERSION=/ s/(.*)"$/\1"/' ./common/arch/arm64/configs/gki_defconfig
-            if [ ! -z ${{ inputs.version }} ]; then
-              sed -i '/^CONFIG_LOCALVERSION=/ s/="\([^"]*\)"/="${{ inputs.version }}"/' ./common/arch/arm64/configs/gki_defconfig
-            fi
-          fi
 
     
     - name: Change Kernel Name
