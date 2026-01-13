@@ -722,8 +722,8 @@ jobs:
             BUILD_DATE=$(date +"%a %b %d %H:%M:%S %Z %Y")
     
             # Set custom build user dan host
-            export KBUILD_BUILD_USER="FUCKYOUBITCH-Builder"
-            export KBUILD_BUILD_HOST="GitHub-Actions-CI"
+            export KBUILD_BUILD_USER="FUCKYOUBITCH"
+            export KBUILD_BUILD_HOST="fUCKYOU"
     
             # Simpan ke environment untuk build step berikutnya
             echo "KBUILD_BUILD_TIMESTAMP=$BUILD_DATE" >> $GITHUB_ENV
@@ -789,8 +789,8 @@ jobs:
             # Export environment variables untuk kernel build
             # Variabel ini akan digunakan oleh build system kernel
             export KBUILD_BUILD_TIMESTAMP="${{ env.KBUILD_BUILD_TIMESTAMP || '$(date +"%a %b %d %H:%M:%S %Z %Y")' }}"
-            export KBUILD_BUILD_USER="${{ env.KBUILD_BUILD_USER || 'FUCKYOUBITCH-Builder' }}"
-            export KBUILD_BUILD_HOST="${{ env.KBUILD_BUILD_HOST || 'GitHub-Actions-CI' }}"
+            export KBUILD_BUILD_USER="${{ env.KBUILD_BUILD_USER || 'FUCKYOUBITCH' }}"
+            export KBUILD_BUILD_HOST="${{ env.KBUILD_BUILD_HOST || 'FUCKYOU' }}"
     
             echo "Final build environment:"
             echo "KBUILD_BUILD_TIMESTAMP=$KBUILD_BUILD_TIMESTAMP"
