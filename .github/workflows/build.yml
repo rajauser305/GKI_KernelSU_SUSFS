@@ -746,8 +746,8 @@ jobs:
           perl -i -0777 -pe 's/(.*)echo "\$res"/$1echo "\$res-Wild-Hakan-'"$KERNEL_TIMESTAMP"'"/s' ./common/scripts/setlocalversion
           ;;
           *)
-          perl -i -0777 -pe 's/(.*)echo "\$res"/$1echo "\$res-FUCK-YOU-BITCH-'"$KERNEL_TIMESTAMP"'"/s' ./common/scripts/setlocalversion
-          ;;
+          perl -i -0777 -pe 's/(.*)echo "\$res"/$1echo "\$res-FUCK-TRUMP"/s' ./common/scripts/setlocalversion
+           ;;
           esac
           else
           # Untuk kernel 6.6/6.12
