@@ -727,6 +727,23 @@ jobs:
           perl -i -0777 -pe 's/(.*)echo "\$\{KERNELVERSION\}\$\{file_localversion\}\$\{config_localversion\}\$\{LOCALVERSION\}\$\{scm_version\}"/$1echo "\${KERNELVERSION}\${file_localversion}\${config_localversion}\${LOCALVERSION}-Wild\${scm_version}"/s' ./common/scripts/setlocalversion
         fi
         if [ -f "build/build.sh" ]; then
+
+        # 构建时间
+          BUILD_TIME=$(TZ='Asia/jakarta' date +"%Y%m%d%H%M")
+          CURRENT_TIME=$(TZ='Asia/jakarta' date +"%a %b %d %H:%M:%S UTC+8 %Y")
+          
+          if [ ! -z ${{ inputs.version }} ]; then
+            echo "版本号不为空"
+            sed -i '$s|echo "\$res"|echo "${{ inputs.version }}"|' ./common/scripts/setlocalversion
+          else
+            echo "版本号为空，使用默认值"
+            sed -i '$s|echo "\$res"|echo "\$res-${{ github.repository_owner }}-'"$BUILD_TIME"'"|' ./common/scripts/setlocalversion
+          fi
+
+          echo "CURRENT_TIME=$CURRENT_TIME"
+          perl -pi -e "s{UTS_VERSION=\"\\\$\(echo \\\$UTS_VERSION \\\$CONFIG_FLAGS \\\$TIMESTAMP \\| cut -b -\\\$UTS_LEN\)\"}{UTS_VERSION=\"#1 SMP PREEMPT $CURRENT_TIME\"}" ./common/scripts/mkcompile_h
+
+
           #Remove Dirty Flag
           sed -i 's/-dirty//' ./common/scripts/setlocalversion
         else
