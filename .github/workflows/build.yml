@@ -713,52 +713,65 @@ jobs:
           perl -i -0777 -pe 's/\$\(\s*CONFIG_ANDROID_BINDER_IPC_RUST\s*\)/m/' common/drivers/android/Makefile
           cat common/drivers/android/Makefile
         fi
-
-
-
-    
+        
     - name: Change Kernel Name
       working-directory: ${{ env.KERNEL_ROOT }}
       run: |
-        #KONTOL to Kernel Version (replace last instance only)
+        # Format tanggal untuk versi kernel
+        DATE_SHORT=$(date +"%Y%m%d-%H%M")
+        BUILD_DATE=$(date +"%a %b %d %H:%M:%S %Z %Y")
+    
+        # Kernel Version 5.x atau 6.1
         if [[ "${{ inputs.kernel_version }}" == "5."* ]] || [[ "${{ inputs.kernel_version }}" == "6.1" ]]; then
           case ${{ matrix.build_type }} in
-            TheWildJames)
-              perl -i -0777 -pe 's/(.*)echo "\$res"/$1echo "\$res-🟢-Wild-Exclusive"/s' ./common/scripts/setlocalversion
-              ;;
-            MarionKernel)
-              perl -i -0777 -pe 's/(.*)echo "\$res"/$1echo "\$res-Wild-MarionKernel"/s' ./common/scripts/setlocalversion
-              ;;
-            Hakan)
-              perl -i -0777 -pe 's/(.*)echo "\$res"/$1echo "\$res-Wild-Hakan"/s' ./common/scripts/setlocalversion
-              ;;
-            *)
-            perl -i -0777 -pe 's/(.*)echo "\$res"/$1echo "\$res-FUCK-YOU-BITCH-'"$TIMESTAMP"'"/s' ./common/scripts/setlocalversion
-              ;;
+        TheWildJames)
+          perl -i -0777 -pe 's/(.*)echo "\$res"/$1echo "\$res-🟢-Wild-Exclusive-$DATE_SHORT"/s' ./common/scripts/setlocalversion
+          ;;
+        MarionKernel)
+          perl -i -0777 -pe 's/(.*)echo "\$res"/$1echo "\$res-Wild-MarionKernel-$DATE_SHORT"/s' ./common/scripts/setlocalversion
+          ;;
+        Hakan)
+          perl -i -0777 -pe 's/(.*)echo "\$res"/$1echo "\$res-Wild-Hakan-$DATE_SHORT"/s' ./common/scripts/setlocalversion
+          ;;
+        *)
+          perl -i -0777 -pe 's/(.*)echo "\$res"/$1echo "\$res-FUCK-YOU-BITCH-$DATE_SHORT"/s' ./common/scripts/setlocalversion
+          ;;
           esac
-        else
-          perl -i -0777 -pe 's/(.*)echo "\$\{KERNELVERSION\}\$\{file_localversion\}\$\{config_localversion\}\$\{LOCALVERSION\}\$\{scm_version\}"/$1echo "\${KERNELVERSION}\${file_localversion}\${config_localversion}\${LOCALVERSION}-Wild\${scm_version}"/s' ./common/scripts/setlocalversion
-        fi
-        if [ -f "build/build.sh" ]; then
+          else
+          # Kernel Version 6.6 atau 6.12
+        perl -i -0777 -pe 's/(.*)echo "\$\{KERNELVERSION\}\$\{file_localversion\}\$\{config_localversion\}\$\{LOCALVERSION\}\$\{scm_version\}"/$1echo "\${KERNELVERSION}\${file_localversion}\${config_localversion}\${LOCALVERSION}-Wild-$DATE_SHORT\${scm_version}"/s' ./common/scripts/setlocalversion
+          fi
+    
+          # Set build timestamp di environment untuk build process
+          echo "BUILD_TIMESTAMP=$BUILD_DATE" >> $GITHUB_ENV
+    
+          # Hapus Dirty Flag
+         if [ -f "build/build.sh" ]; then
+         sed -i 's/-dirty//' ./common/scripts/setlocalversion
+         else
+         sed -i "/stable_scmversion_cmd/s/-maybe-dirty//g" ./build/kernel/kleaf/impl/stamp.bzl
+         sed -i 's/-dirty//' ./common/scripts/setlocalversion
+         fi
 
-        
+         cd $KERNEL_ROOT/common
+         git config --global user.name "github-actions[bot]"
+         git config --global user.email "github-actions[bot]@users.noreply.github.com"
+         git add .
+        git commit -m "Wild: Build $BUILD_DATE"
 
-          #Remove Dirty Flag
-          sed -i 's/-dirty//' ./common/scripts/setlocalversion
-        else
-          #Remove Dirty Flag
-          sed -i "/stable_scmversion_cmd/s/-maybe-dirty//g" ./build/kernel/kleaf/impl/stamp.bzl
-          sed -i 's/-dirty//' ./common/scripts/setlocalversion
-          #Remove Abi Exports and Error
-          rm -rf ./common/android/abi_gki_protected_exports_*
-          perl -pi -e 's/^\s*"protected_exports_list"\s*:\s*"android\/abi_gki_protected_exports_aarch64",\s*$//;' ./common/BUILD.bazel
-        fi
 
-        cd $KERNEL_ROOT/common
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        git add .
-        git commit -m "Wild: Clean Dirty Flag"
+         - name: Set Build Environment with Timestamp
+           working-directory: ${{ env.KERNEL_ROOT }}
+           run: |
+           # Export build timestamp untuk digunakan selama build
+           export KBUILD_BUILD_TIMESTAMP=$(date +"%a %b %d %H:%M:%S %Z %Y")
+           export KBUILD_BUILD_USER="github-actions"
+          export KBUILD_BUILD_HOST="github.com"
+    
+          # Simpan ke environment untuk step selanjutnya
+          echo "KBUILD_BUILD_TIMESTAMP=$KBUILD_BUILD_TIMESTAMP" >> $GITHUB_ENV
+          echo "KBUILD_BUILD_USER=$KBUILD_BUILD_USER" >> $GITHUB_ENV
+         echo "KBUILD_BUILD_HOST=$KBUILD_BUILD_HOST" >> $GITHUB_ENV
 
     - name: Build Kernel
       working-directory: ${{ env.KERNEL_ROOT }}
