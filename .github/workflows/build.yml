@@ -752,12 +752,12 @@ jobs:
             fi
           fi
 
-          - name: Set Kernel Build Information
-           working-directory: ${{ env.KERNEL_ROOT }}
-           run: |
-           # Update kernel version with timestamp
-           TIMESTAMP=$(date +"%y%m%d.%H%M")
-           sed -i '$s|echo "$res"|echo "$res-'$TIMESTAMP'"|' ./common/scripts/setlocalversion
+    - name: Set Kernel Build Information
+      working-directory: ${{ env.KERNEL_ROOT }}
+      run: |
+        # Update kernel version with timestamp
+        TIMESTAMP=$(date +"%y%m%d.%H%M")
+        sed -i '$s|echo "$res"|echo "$res-'$TIMESTAMP'"|' ./common/scripts/setlocalversion
 
     - name: Change Kernel Name
       working-directory: ${{ env.KERNEL_ROOT }}
