@@ -717,91 +717,107 @@ jobs:
     - name: Change Kernel Name
       working-directory: ${{ env.KERNEL_ROOT }}
       run: |
-            # Format timestamp untuk kernel version
-            KERNEL_TIMESTAMP=$(date +"%Y%m%d.%H%M")
-            BUILD_DATE=$(date +"%a %b %d %H:%M:%S %Z %Y")
+          # Format timestamp untuk kernel version
+          KERNEL_TIMESTAMP=$(date +"%Y%m%d.%H%M")
+          BUILD_DATE=$(date +"%a %b %d %H:%M:%S %Z %Y")
     
-            # Set custom build user dan host
-            export KBUILD_BUILD_USER="FUCKYOUBITCH"
-            export KBUILD_BUILD_HOST="fUCKYOU"
+          # SET BUILD USER DAN HOST LANGSUNG KE MAKE FILE
+          echo "Setting build user: FUCKYOU"
+          echo "Setting build host: BITCH"
     
-            # Simpan ke environment untuk build step berikutnya
-            echo "KBUILD_BUILD_TIMESTAMP=$BUILD_DATE" >> $GITHUB_ENV
-            echo "KBUILD_BUILD_USER=$KBUILD_BUILD_USER" >> $GITHUB_ENV
-            echo "KBUILD_BUILD_HOST=$KBUILD_BUILD_HOST" >> $GITHUB_ENV
+          # Simpan ke environment untuk build step berikutnya
+          echo "KBUILD_BUILD_TIMESTAMP=$BUILD_DATE" >> $GITHUB_ENV
+          echo "KBUILD_BUILD_USER=YourCustomUser" >> $GITHUB_ENV
+          echo "KBUILD_BUILD_HOST=YourCustomHost" >> $GITHUB_ENV
     
-            echo "Build timestamp: $BUILD_DATE"
-            echo "Kernel timestamp: $KERNEL_TIMESTAMP"
-            echo "Build user: $KBUILD_BUILD_USER"
-            echo "Build host: $KBUILD_BUILD_HOST"
+          echo "Build timestamp: $BUILD_DATE"
+          echo "Kernel timestamp: $KERNEL_TIMESTAMP"
     
-            # Wild to Kernel Version (replace last instance only)
-            if [[ "${{ inputs.kernel_version }}" == "5."* ]] || [[ "${{ inputs.kernel_version }}" == "6.1" ]]; then
-            case ${{ matrix.build_type }} in
-            TheWildJames)
-            perl -i -0777 -pe 's/(.*)echo "\$res"/$1echo "\$res-🟢-Wild-Exclusive-'"$KERNEL_TIMESTAMP"'"/s' ./common/scripts/setlocalversion
-            ;;
-            MarionKernel)
-            perl -i -0777 -pe 's/(.*)echo "\$res"/$1echo "\$res-Wild-MarionKernel-'"$KERNEL_TIMESTAMP"'"/s' ./common/scripts/setlocalversion
-            ;;
-            Hakan)
-            perl -i -0777 -pe 's/(.*)echo "\$res"/$1echo "\$res-Wild-Hakan-'"$KERNEL_TIMESTAMP"'"/s' ./common/scripts/setlocalversion
-            ;;
-            *)
-            perl -i -0777 -pe 's/(.*)echo "\$res"/$1echo "\$res-FUCK-YOU-BITCH-'"$KERNEL_TIMESTAMP"'"/s' ./common/scripts/setlocalversion
-            ;;
-            esac
-            else
-            # Untuk kernel 6.6/6.12
-            perl -i -0777 -pe 's/(.*)echo "\$\{KERNELVERSION\}\$\{file_localversion\}\$\{config_localversion\}\$\{LOCALVERSION\}\$\{scm_version\}"/$1echo "\${KERNELVERSION}\${file_localversion}\${config_localversion}\${LOCALVERSION}-Wild-'"$KERNEL_TIMESTAMP"'\${scm_version}"/s' ./common/scripts/setlocalversion
-            fi
+          # Wild to Kernel Version (replace last instance only)
+          if [[ "${{ inputs.kernel_version }}" == "5."* ]] || [[ "${{ inputs.kernel_version }}" == "6.1" ]]; then
+          case ${{ matrix.build_type }} in
+          TheWildJames)
+          perl -i -0777 -pe 's/(.*)echo "\$res"/$1echo "\$res-🟢-Wild-Exclusive-'"$KERNEL_TIMESTAMP"'"/s' ./common/scripts/setlocalversion
+           ;;
+          MarionKernel)
+          perl -i -0777 -pe 's/(.*)echo "\$res"/$1echo "\$res-Wild-MarionKernel-'"$KERNEL_TIMESTAMP"'"/s' ./common/scripts/setlocalversion
+          ;;
+          Hakan)
+          perl -i -0777 -pe 's/(.*)echo "\$res"/$1echo "\$res-Wild-Hakan-'"$KERNEL_TIMESTAMP"'"/s' ./common/scripts/setlocalversion
+          ;;
+          *)
+          perl -i -0777 -pe 's/(.*)echo "\$res"/$1echo "\$res-FUCK-YOU-BITCH-'"$KERNEL_TIMESTAMP"'"/s' ./common/scripts/setlocalversion
+          ;;
+          esac
+          else
+          # Untuk kernel 6.6/6.12
+          perl -i -0777 -pe 's/(.*)echo "\$\{KERNELVERSION\}\$\{file_localversion\}\$\{config_localversion\}\$\{LOCALVERSION\}\$\{scm_version\}"/$1echo "\${KERNELVERSION}\${file_localversion}\${config_localversion}\${LOCALVERSION}-Wild-'"$KERNEL_TIMESTAMP"'\${scm_version}"/s' ./common/scripts/setlocalversion
+          fi
     
-            # Tambahkan juga timestamp ke Makefile untuk kernel build
-            if [ -f "./common/Makefile" ]; then
-            sed -i "s/^KBUILD_BUILD_TIMESTAMP.*/KBUILD_BUILD_TIMESTAMP := $BUILD_DATE/" ./common/Makefile
-            if ! grep -q "^KBUILD_BUILD_TIMESTAMP" ./common/Makefile; then
-            echo "" >> ./common/Makefile
-            echo "KBUILD_BUILD_TIMESTAMP := $BUILD_DATE" >> ./common/Makefile
-            fi
-            fi
+          # MENGUPDATE BUILD USER/HOST LANGSUNG DI MAKEFILE
+          if [ -f "./common/Makefile" ]; then
+          # Update KBUILD_BUILD_USER dan KBUILD_BUILD_HOST di Makefile
+          sed -i "s/^KBUILD_BUILD_USER.*/KBUILD_BUILD_USER := FUCKYOU/" ./common/Makefile
+          sed -i "s/^KBUILD_BUILD_HOST.*/KBUILD_BUILD_HOST := BITCH/" ./common/Makefile
+          sed -i "s/^KBUILD_BUILD_TIMESTAMP.*/KBUILD_BUILD_TIMESTAMP := $BUILD_DATE/" ./common/Makefile
+      
+          # Jika tidak ada, tambahkan
+          if ! grep -q "^KBUILD_BUILD_USER" ./common/Makefile; then
+          echo "" >> ./common/Makefile
+          echo "KBUILD_BUILD_USER := FUCKYOU" >> ./common/Makefile
+          fi
+          if ! grep -q "^KBUILD_BUILD_HOST" ./common/Makefile; then
+          echo "KBUILD_BUILD_HOST := BITCH" >> ./common/Makefile
+          fi
+          if ! grep -q "^KBUILD_BUILD_TIMESTAMP" ./common/Makefile; then
+          echo "KBUILD_BUILD_TIMESTAMP := $BUILD_DATE" >> ./common/Makefile
+          fi
+          fi
     
-            if [ -f "build/build.sh" ]; then
-            # Remove Dirty Flag
-            sed -i 's/-dirty//' ./common/scripts/setlocalversion
-            else
-            # Remove Dirty Flag
-            sed -i "/stable_scmversion_cmd/s/-maybe-dirty//g" ./build/kernel/kleaf/impl/stamp.bzl
-            sed -i 's/-dirty//' ./common/scripts/setlocalversion
-            # Remove Abi Exports and Error
-            rm -rf ./common/android/abi_gki_protected_exports_*
-            perl -pi -e 's/^\s*"protected_exports_list"\s*:\s*"android\/abi_gki_protected_exports_aarch64",\s*$//;' ./common/BUILD.bazel
-            fi
+          # Juga update di init/version.c jika ada
+          if [ -f "./common/init/version.c" ]; then
+          sed -i "s/\"build-user\"/\"YourCustomUser\"/g" ./common/init/version.c
+          sed -i "s/\"build-host\"/\"YourCustomHost\"/g" ./common/init/version.c
+          fi
+    
+          if [ -f "build/build.sh" ]; then
+          # Remove Dirty Flag
+          sed -i 's/-dirty//' ./common/scripts/setlocalversion
+          else
+          # Remove Dirty Flag
+          sed -i "/stable_scmversion_cmd/s/-maybe-dirty//g" ./build/kernel/kleaf/impl/stamp.bzl
+          sed -i 's/-dirty//' ./common/scripts/setlocalversion
+          # Remove Abi Exports and Error
+          rm -rf ./common/android/abi_gki_protected_exports_*
+          perl -pi -e 's/^\s*"protected_exports_list"\s*:\s*"android\/abi_gki_protected_exports_aarch64",\s*$//;' ./common/BUILD.bazel
+          fi
 
-            cd $KERNEL_ROOT/common
-            git config --global user.name "github-actions[bot]"
-            git config --global user.email "github-actions[bot]@users.noreply.github.com"
-            git add .
-            git commit -m "Wild: Build $BUILD_DATE"
+          cd $KERNEL_ROOT/common
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Wild: Build $BUILD_DATE"
 
     - name: Set Build Environment Variables
       working-directory: ${{ env.KERNEL_ROOT }}
       run: |
-            # Export environment variables untuk kernel build
-            # Variabel ini akan digunakan oleh build system kernel
-            export KBUILD_BUILD_TIMESTAMP="${{ env.KBUILD_BUILD_TIMESTAMP || '$(date +"%a %b %d %H:%M:%S %Z %Y")' }}"
-            export KBUILD_BUILD_USER="${{ env.KBUILD_BUILD_USER || 'FUCKYOUBITCH' }}"
-            export KBUILD_BUILD_HOST="${{ env.KBUILD_BUILD_HOST || 'FUCKYOU' }}"
+         # Export environment variables untuk kernel build
+         # Variabel ini akan digunakan oleh build system kernel
+         export KBUILD_BUILD_TIMESTAMP="${{ env.KBUILD_BUILD_TIMESTAMP || '$(date +"%a %b %d %H:%M:%S %Z %Y")' }}"
+         export KBUILD_BUILD_USER="FUCKYOU"
+         export KBUILD_BUILD_HOST="BITCH"
     
-            echo "Final build environment:"
-            echo "KBUILD_BUILD_TIMESTAMP=$KBUILD_BUILD_TIMESTAMP"
-            echo "KBUILD_BUILD_USER=$KBUILD_BUILD_USER"
-            echo "KBUILD_BUILD_HOST=$KBUILD_BUILD_HOST"
+         echo "Final build environment:"
+         echo "KBUILD_BUILD_TIMESTAMP=$KBUILD_BUILD_TIMESTAMP"
+         echo "KBUILD_BUILD_USER=FUCKYOU"
+         echo "KBUILD_BUILD_HOST=BITCH"
     
-            # Export untuk step berikutnya (jika belum)
-            echo "KBUILD_BUILD_TIMESTAMP=$KBUILD_BUILD_TIMESTAMP" >> $GITHUB_ENV
-            echo "KBUILD_BUILD_USER=$KBUILD_BUILD_USER" >> $GITHUB_ENV
-            echo "KBUILD_BUILD_HOST=$KBUILD_BUILD_HOST" >> $GITHUB_ENV
-       
+         # Export untuk step berikutnya (jika belum)
+         echo "KBUILD_BUILD_TIMESTAMP=$KBUILD_BUILD_TIMESTAMP" >> $GITHUB_ENV
+         echo "KBUILD_BUILD_USER=FUCKYOU" >> $GITHUB_ENV
+         echo "KBUILD_BUILD_HOST=BITCH" >> $GITHUB_ENV
+
+ 
     - name: Build Kernel
       working-directory: ${{ env.KERNEL_ROOT }}
       env:
