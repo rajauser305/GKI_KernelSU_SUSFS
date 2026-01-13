@@ -215,6 +215,13 @@ jobs:
               curl -LSs "https://raw.githubusercontent.com/rsuntk/KernelSU/main/kernel/setup.sh" | bash -s main
             fi
             ;;
+          SUKISU)
+            if [[ -n "${{ inputs.ksu_commit }}" ]]; then
+               curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/main/kernel/setup.sh" | bash -s "${{ inputs.ksu_commit }}"
+            else
+              curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/main/kernel/setup.sh" | bash -s main
+            fi
+            ;;
         esac
 
     - name: Clone & Apply SUSFS Patches for KernelSU Variants
