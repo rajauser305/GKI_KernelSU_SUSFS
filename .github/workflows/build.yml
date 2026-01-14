@@ -557,6 +557,10 @@ jobs:
         
         EOF
 
+        # TAMBAHKAN INI: Nonaktifkan CONFIG_LOCALVERSION_AUTO
+        sed -i '/CONFIG_LOCALVERSION_AUTO/d' "${{ env.DEFCONFIG }}"
+        echo "# CONFIG_LOCALVERSION_AUTO is not set" >> "${{ env.DEFCONFIG }}"
+
         echo "Checking if configs were applied..."
         if grep -q "CONFIG_KSU=y" "${{ env.DEFCONFIG }}" && grep -q "CONFIG_KSU_SUSFS=y" "${{ env.DEFCONFIG }}" && grep -q "CONFIG_KPROBES=y" "${{ env.DEFCONFIG }}"; then
           echo "SUCCESS: KSU, SUSFS, and KPROBES configs verified in ${{ env.DEFCONFIG }}"
