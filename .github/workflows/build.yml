@@ -711,6 +711,23 @@ jobs:
           cat common/drivers/android/Makefile
         fi
 
+    - name: Clean Android14 Version Suffix
+      if: inputs.android_version == 'android14'
+      working-directory: ${{ env.KERNEL_ROOT }}
+      run: |
+           # Hapus -11 dari Makefile jika ada
+           if [[ -f "common/Makefile" ]]; then
+           # Cari dan hapus -11 dari versi
+           sed -i 's/android14-11/android14/g' common/Makefile
+           echo "Cleaned -11 suffix from Makefile"
+           fi
+    
+           # Juga hapus dari file version.c jika ada
+           if [[ -f "common/init/version.c" ]]; then
+           sed -i 's/android14-11/android14/g' common/init/version.c
+           echo "Cleaned -11 suffix from version.c"
+           fi
+
     - name: Change Kernel Name
       working-directory: ${{ env.KERNEL_ROOT }}
       run: |
@@ -813,7 +830,8 @@ jobs:
          echo "KBUILD_BUILD_TIMESTAMP=$KBUILD_BUILD_TIMESTAMP" >> $GITHUB_ENV
          echo "KBUILD_BUILD_USER=FUCK-YOU" >> $GITHUB_ENV
          echo "KBUILD_BUILD_HOST=NETANYAHU" >> $GITHUB_ENV
-
+         
+      
  
     - name: Build Kernel
       working-directory: ${{ env.KERNEL_ROOT }}
