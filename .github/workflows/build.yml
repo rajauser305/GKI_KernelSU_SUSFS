@@ -816,6 +816,19 @@ jobs:
           git add .
           git commit -m "Wild: Build $BUILD_DATE"
 
+          # TAMBAHKAN DI SINI: Pastikan android14 dihapus dari string akhir
+          # Modifikasi regex di setlocalversion untuk menghapus android14
+          if [[ "${{ inputs.android_version }}" == "android14" ]]; then
+           # Pastikan android14 dihapus dari output
+           sed -i 's/android14-11//g' common/scripts/setlocalversion
+           sed -i 's/android14//g' common/scripts/setlocalversion
+      
+           # Juga hapus dari versi yang sudah ada
+           sed -i 's/-android14-11//g' common/scripts/setlocalversion
+           sed -i 's/-android14//g' common/scripts/setlocalversion
+      
+           echo "✓ Forced removal
+          fi
 
     - name: Remove ALL Android Version Strings
       working-directory: ${{ env.KERNEL_ROOT }}
