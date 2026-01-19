@@ -721,15 +721,15 @@ jobs:
       run: |
            # Hapus -11 dari Makefile jika ada
            if [[ -f "common/Makefile" ]]; then
-           # Cari dan hapus -11 dari versi
-           sed -i 's/android14-11/android14/g' common/Makefile
-           echo "Cleaned -11 suffix from Makefile"
+            # Cari dan hapus -11 dari versi
+            sed -i 's/android14-11/android14/g' common/Makefile
+            echo "Cleaned -11 suffix from Makefile"
            fi
     
            # Juga hapus dari file version.c jika ada
            if [[ -f "common/init/version.c" ]]; then
-           sed -i 's/android14-11/android14/g' common/init/version.c
-           echo "Cleaned -11 suffix from version.c"
+            sed -i 's/android14-11/android14/g' common/init/version.c
+            echo "Cleaned -11 suffix from version.c"
            fi 
            
     - name: Change Kernel Name
@@ -799,15 +799,15 @@ jobs:
          fi
 
          if [ -f "build/build.sh" ]; then
+          # Remove Dirty Flag
+          sed -i 's/-dirty//' ./common/scripts/setlocalversion
+          else
          # Remove Dirty Flag
-         sed -i 's/-dirty//' ./common/scripts/setlocalversion
-         else
-         # Remove Dirty Flag
-         sed -i "/stable_scmversion_cmd/s/-maybe-dirty//g" ./build/kernel/kleaf/impl/stamp.bzl
-         sed -i 's/-dirty//' ./common/scripts/setlocalversion
+          sed -i "/stable_scmversion_cmd/s/-maybe-dirty//g" ./build/kernel/kleaf/impl/stamp.bzl
+          sed -i 's/-dirty//' ./common/scripts/setlocalversion
          # Remove Abi Exports and Error
-         rm -rf ./common/android/abi_gki_protected_exports_*
-         perl -pi -e 's/^\s*"protected_exports_list"\s*:\s*"android\/abi_gki_protected_exports_aarch64",\s*$//;' ./common/BUILD.bazel
+          rm -rf ./common/android/abi_gki_protected_exports_*
+          perl -pi -e 's/^\s*"protected_exports_list"\s*:\s*"android\/abi_gki_protected_exports_aarch64",\s*$//;' ./common/BUILD.bazel
          fi
 
          cd $KERNEL_ROOT/common
@@ -823,58 +823,58 @@ jobs:
     
          # 1. Hapus dari Makefile - termasuk android14 dan android14-11
          if [[ -f "common/Makefile" ]]; then
-         # Hapus semua variasi android14
-         sed -i 's/android14-11//g' common/Makefile
-         sed -i 's/android14//g' common/Makefile
+          # Hapus semua variasi android14
+          sed -i 's/android14-11//g' common/Makefile
+          sed -i 's/android14//g' common/Makefile
       
-         # Juga hapus dari EXTRAVERSION jika ada
-         sed -i 's/EXTRAVERSION =.*android.*//g' common/Makefile
-         sed -i '/^EXTRAVERSION = -android14/d' common/Makefile
-         sed -i '/^EXTRAVERSION = -android14-11/d' common/Makefile
+          # Juga hapus dari EXTRAVERSION jika ada
+          sed -i 's/EXTRAVERSION =.*android.*//g' common/Makefile
+          sed -i '/^EXTRAVERSION = -android14/d' common/Makefile
+          sed -i '/^EXTRAVERSION = -android14-11/d' common/Makefile
       
-         echo "✓ Cleaned Android strings from Makefile"
+          echo "✓ Cleaned Android strings from Makefile"
          fi
     
          # 2. Hapus dari version.c
          if [[ -f "common/init/version.c" ]]; then
-         sed -i 's/"android14-11"//g' common/init/version.c
-         sed -i 's/"android14"//g' common/init/version.c
-         sed -i 's/android14-11//g' common/init/version.c
-         sed -i 's/android14//g' common/init/version.c
-         echo "✓ Cleaned Android strings from version.c"
+          sed -i 's/"android14-11"//g' common/init/version.c
+          sed -i 's/"android14"//g' common/init/version.c
+          sed -i 's/android14-11//g' common/init/version.c
+          sed -i 's/android14//g' common/init/version.c
+          echo "✓ Cleaned Android strings from version.c"
          fi
     
          # 3. Hapus dari setlocalversion script
          if [[ -f "common/scripts/setlocalversion" ]]; then
-         sed -i 's/android14-11//g' common/scripts/setlocalversion
-         sed -i 's/android14//g' common/scripts/setlocalversion
-         echo "✓ Cleaned Android strings from setlocalversion"
+          sed -i 's/android14-11//g' common/scripts/setlocalversion
+          sed -i 's/android14//g' common/scripts/setlocalversion
+          echo "✓ Cleaned Android strings from setlocalversion"
          fi
     
          # 4. Hapus dari BUILD.bazel
          if [[ -f "common/BUILD.bazel" ]]; then
-         sed -i 's/android14-11//g' common/BUILD.bazel
-         sed -i 's/android14//g' common/BUILD.bazel
-         echo "✓ Cleaned Android strings from BUILD.bazel"
+          sed -i 's/android14-11//g' common/BUILD.bazel
+          sed -i 's/android14//g' common/BUILD.bazel
+          echo "✓ Cleaned Android strings from BUILD.bazel"
          fi
     
-         # 5. Hapus dari semua file C dan header
-         echo "=== Removing Android strings from all source files ==="
-         find common -type f \( -name "*.c" -o -name "*.h" -o -name "*.S" \) \
-         -exec grep -l "android14" {} \; 2>/dev/null | \
-         while read file; do
-         sed -i 's/android14-11//g' "$file"
-         sed -i 's/android14//g' "$file"
-         echo "  Cleaned: $file"
+          # 5. Hapus dari semua file C dan header
+          echo "=== Removing Android strings from all source files ==="
+          find common -type f \( -name "*.c" -o -name "*.h" -o -name "*.S" \) \
+          -exec grep -l "android14" {} \; 2>/dev/null | \
+          while read file; do
+          sed -i 's/android14-11//g' "$file"
+          sed -i 's/android14//g' "$file"
+          echo "  Cleaned: $file"
          done
     
-         # 6. Hapus dari semua Makefile dan Kbuild
-         find common -type f \( -name "Makefile" -o -name "Kbuild" -o -name "*.mk" \) \
-         -exec grep -l "android14" {} \; 2>/dev/null | \
-         while read file; do
-         sed -i 's/android14-11//g' "$file"
-         sed -i 's/android14//g' "$file"
-         echo "  Cleaned: $file"
+          # 6. Hapus dari semua Makefile dan Kbuild
+          find common -type f \( -name "Makefile" -o -name "Kbuild" -o -name "*.mk" \) \
+          -exec grep -l "android14" {} \; 2>/dev/null | \
+          while read file; do
+          sed -i 's/android14-11//g' "$file"
+          sed -i 's/android14//g' "$file"
+          echo "  Cleaned: $file"
          done
     
          # 7. VERIFIKASI: Cek apakah masih ada yang tersisa
@@ -882,24 +882,24 @@ jobs:
          REMAINING=$(find common -type f -exec grep -l "android14" {} \; 2>/dev/null | wc -l)
     
          if [[ "$REMAINING" -gt 0 ]]; then
-         echo "⚠️  WARNING: Masih ada $REMAINING file yang mengandung 'android14':"
-         find common -type f -exec grep -l "android14" {} \; 2>/dev/null | head -20
-         echo "Mencoba pembersihan lebih agresif..."
+          echo "⚠️  WARNING: Masih ada $REMAINING file yang mengandung 'android14':"
+          find common -type f -exec grep -l "android14" {} \; 2>/dev/null | head -20
+          echo "Mencoba pembersihan lebih agresif..."
       
          # Pembersihan agresif dengan sed pattern matching
-         find common -type f \( -name "*.c" -o -name "*.h" -o -name "*.S" -o -name "Makefile" -o -name "Kbuild" -o -name "*.mk" \) \
-         -exec sed -i 's/[Aa]ndroid[[:space:]]*14[-]*11*//g' {} \;
-         find common -type f \( -name "*.c" -o -name "*.h" -o -name "*.S" -o -name "Makefile" -o -name "Kbuild" -o -name "*.mk" \) \
-         -exec sed -i 's/[Aa]ndroid14[-]*11*//g' {} \;
-         else
-         echo "✅ SUCCESS: Semua string 'android14' telah dihapus!"
+          find common -type f \( -name "*.c" -o -name "*.h" -o -name "*.S" -o -name "Makefile" -o -name "Kbuild" -o -name "*.mk" \) \
+          -exec sed -i 's/[Aa]ndroid[[:space:]]*14[-]*11*//g' {} \;
+          find common -type f \( -name "*.c" -o -name "*.h" -o -name "*.S" -o -name "Makefile" -o -name "Kbuild" -o -name "*.mk" \) \
+          -exec sed -i 's/[Aa]ndroid14[-]*11*//g' {} \;
+          else
+          echo "✅ SUCCESS: Semua string 'android14' telah dihapus!"
          fi
     
-         # 8. Tampilkan preview versi kernel nanti
-         echo ""
-         echo "=== Expected kernel version format ==="
-         echo "Sebelum: 6.1.124-android14-11-FUCK-YOU-TRUMP-FUCK-YOU@NETANYAHU"
-         echo "Sesudah: 6.1.124-FUCK-YOU-TRUMP-FUCK-YOU@NETANYAHU"
+          # 8. Tampilkan preview versi kernel nanti
+          echo ""
+          echo "=== Expected kernel version format ==="
+          echo "Sebelum: 6.1.124-android14-11-FUCK-YOU-TRUMP-FUCK-YOU@NETANYAHU"
+          echo "Sesudah: 6.1.124-FUCK-YOU-TRUMP-FUCK-YOU@NETANYAHU"
 
     - name: Set Build Environment Variables
       working-directory: ${{ env.KERNEL_ROOT }}
