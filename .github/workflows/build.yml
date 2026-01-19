@@ -222,8 +222,21 @@ jobs:
               curl -LSs "https://raw.githubusercontent.com/rsuntk/KernelSU/main/kernel/setup.sh" | bash -s main
             fi
             ;;
-        esac
-
+          MamboSU)
+            if [[ -n "${{ inputs.ksu_commit }}" ]]; then
+              curl -LSs "https://raw.githubusercontent.com/yougotme101/KernelSU/refs/heads/master/kernel/setup.sh" | bash -s "${{ inputs.ksu_commit }}"
+            else
+              curl -LSs "https://raw.githubusercontent.com/yougotme101/KernelSU/refs/heads/master/kernel/setup.sh" | bash -s master
+            fi
+            ;;
+         MamboSU-SUSFS)
+            if [[ -n "${{ inputs.ksu_commit }}" ]]; then
+              curl -LSs "https://raw.githubusercontent.com/yougotme101/KernelSU/refs/heads/susfs-rksu-master/kernel/setup.sh" | bash -s "${{ inputs.ksu_commit }}"
+             else
+              curl -LSs "https://raw.githubusercontent.com/yougotme101/KernelSU/refs/heads/susfs-rksu-master/kernel/setup.sh" | bash -s susfs-rksu-master
+            fi
+            ;;
+         esac
     - name: Clone & Apply SUSFS Patches for KernelSU Variants
       run: |
         SUSFS_BRANCH="gki-${{ inputs.android_version }}-${{ inputs.kernel_version }}"
@@ -466,6 +479,40 @@ jobs:
             cp "$SUSFS4KSU/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch" .
             patch -p1 < 10_enable_susfs_for_ksu.patch
             ;;
+        MamboSU)
+           echo "MamboSU without SUSFS selected, skipping SUSFS patches."
+           ;;
+
+        MamboSU-SUSFS)
+         SUSFS_VERSION="2.0.0"
+         # Apply SUSFS integration patch
+         cd "$KERNEL_ROOT/KernelSU"
+         cp "$SUSFS4KSU/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch" ./
+         patch -p1 < 10_enable_susfs_for_ksu.patch || true
+        
+         # Apply syscall hooks patch (from test_a.yml)
+         cd "$KERNEL_ROOT/common"
+         curl -L -o scope_min_manual_hooks_v1.6.patch "https://raw.githubusercontent.com/yougotme101/kernel_patches/main/scope_min_manual_hooks_v1.6.patch"
+         patch -p1 < scope_min_manual_hooks_v1.6.patch || echo "Warning: Syscall hooks patch failed"
+        
+         # Copy SUSFS kernel files
+         cp "$SUSFS4KSU/kernel_patches/fs/"* "$KERNEL_ROOT/common/fs/"
+         cp "$SUSFS4KSU/kernel_patches/include/linux/"* "$KERNEL_ROOT/common/include/linux/"
+        
+         # Apply kernel patch
+         cp $SUSFS4KSU/kernel_patches/50_add_susfs_in_gki-${{ inputs.android_version }}-${{ inputs.kernel_version }}.patch ./
+         patch -p1 < 50_add_susfs_in_gki-${{ inputs.android_version }}-${{ inputs.kernel_version }}.patch || true
+         # Apply SUSFS patch if available (from test_a.yml)
+         PATCH_URL="https://api.github.com/repos/yougotme101/kernel_patches/releases/latest"
+         SUSFS_PATCH=$(curl -s "$PATCH_URL" | grep "browser_download_url.*0001-Implement-SUSFS.*Android-${{ inputs.android_version }}.*Kernel-${{ inputs.kernel_version }}.*patch" | cut -d '"' -f 4 | head -n 1)
+        
+        if [[ -n "$SUSFS_PATCH" ]]; then
+          echo "Downloading SUSFS patch: $SUSFS_PATCH"
+          curl -L -o susfs.patch "$SUSFS_PATCH"
+          patch -p1 < susfs.patch || echo "Warning: SUSFS patch failed"
+        fi
+        ;;
+            
         esac
 
     - name: Apply Performance Patches
@@ -548,6 +595,69 @@ jobs:
         # KernelSU Configuration
         CONFIG_KSU=y
         CONFIG_KSU_SUSFS=y
+
+        # Konfigurasi khusus berdasarkan KSU variant
+        if [[ "${{ inputs.ksu_variant }}" == "MamboSU-SUSFS" ]]; then
+         cat >> "${{ env.DEFCONFIG }}" << 'EOF'
+         # MamboSU-SUSFS specific configurations
+         CONFIG_KSU_MANUAL_HOOK=y
+         CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=y
+         CONFIG_KSU_SUSFS_SUS_PATH=y
+         CONFIG_KSU_SUSFS_SUS_MOUNT=y
+         CONFIG_KSU_SUSFS_AUTO_ADD_SUS_KSU_DEFAULT_MOUNT=y
+         CONFIG_KSU_SUSFS_AUTO_ADD_SUS_BIND_MOUNT=y
+         CONFIG_KSU_SUSFS_SUS_KSTAT=y
+         CONFIG_KSU_SUSFS_SUS_OVERLAYFS=n
+         CONFIG_KSU_SUSFS_TRY_UMOUNT=y
+         CONFIG_KSU_SUSFS_AUTO_ADD_TRY_UMOUNT_FOR_BIND_MOUNT=y
+         CONFIG_KSU_SUSFS_SPOOF_UNAME=y
+         CONFIG_KSU_SUSFS_ENABLE_LOG=y
+         CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y
+         CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y
+         CONFIG_KSU_SUSFS_OPEN_REDIRECT=y
+         CONFIG_KSU_SUSFS_SUS_SU=y
+         # Disable KPROBES for manual hook
+         # CONFIG_KPROBES is not set
+         EOF
+         
+        # Nonaktifkan KPROBES untuk MamboSU-SUSFS
+         echo "# CONFIG_KPROBES is not set" >> "${{ env.DEFCONFIG }}"
+         elif [[ "${{ inputs.ksu_variant }}" == "MamboSU" ]]; then
+         cat >> "${{ env.DEFCONFIG }}" << 'EOF'
+         # MamboSU configuration
+         CONFIG_KPROBES=y
+         CONFIG_HAVE_KPROBES=y
+         CONFIG_KPROBE_EVENTS=y
+         CONFIG_OVERLAY_FS=y
+         EOF
+         else
+         # Konfigurasi default untuk varian lain
+         cat >> "${{ env.DEFCONFIG }}" << 'EOF'
+         CONFIG_KPROBES=y
+         CONFIG_HAVE_KPROBES=y
+         CONFIG_KPROBE_EVENTS=y
+         CONFIG_OVERLAY_FS=y
+         EOF
+        fi
+    
+         # Tambahan konfigurasi umum
+         cat >> "${{ env.DEFCONFIG }}" << 'EOF'
+         # TMPFS Support
+         CONFIG_TMPFS_XATTR=y
+         CONFIG_TMPFS_POSIX_ACL=y
+    
+         # BBR TCP Congestion Control
+         CONFIG_TCP_CONG_ADVANCED=y
+         CONFIG_TCP_CONG_BBR=y
+         CONFIG_NET_SCH_FQ=y
+         CONFIG_TCP_CONG_BIC=n
+         CONFIG_TCP_CONG_WESTWOOD=n
+         CONFIG_TCP_CONG_HTCP=n
+         EOF
+    
+        # Nonaktifkan CONFIG_LOCALVERSION_AUTO
+        sed -i '/CONFIG_LOCALVERSION_AUTO/d' "${{ env.DEFCONFIG }}"
+        echo "# CONFIG_LOCALVERSION_AUTO is not set" >> "${{ env.DEFCONFIG }}"
 
           
 
