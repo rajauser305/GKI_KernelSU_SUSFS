@@ -208,6 +208,13 @@ jobs:
               curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
             fi
             ;;
+         SukiSU-ultra)
+           if [[ -n "${{ inputs.ksu_commit }}" ]]; then
+               curl -LSs "https://raw.githubusercontent.com/ShirkNeko/SukiSU-Ultra/main/kernel/setup.sh" | bash -s "${{ inputs.ksu_commit }}"
+           else
+               curl -LSs "https://raw.githubusercontent.com/ShirkNeko/SukiSU-Ultra/main/kernel/setup.sh" | bash -s main
+           fi
+           ;;
           RKSU)
             if [[ -n "${{ inputs.ksu_commit }}" ]]; then
               curl -LSs "https://raw.githubusercontent.com/rsuntk/KernelSU/main/kernel/setup.sh" | bash -s "${{ inputs.ksu_commit }}"
@@ -429,6 +436,30 @@ jobs:
               fi
             fi
             ;;
+        SukiSU-ultra)
+        echo "Applying SUSFS for SukiSU-Ultra..."
+        # Clone SUSFS4KSU
+        git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-${{ inputs.android_version }}-${{ inputs.kernel_version }}
+        
+        # Apply kernel patches
+        cd "$KERNEL_ROOT/common"
+        cp "$SUSFS4KSU/kernel_patches/fs/"* "$KERNEL_ROOT/common/fs/"
+        cp "$SUSFS4KSU/kernel_patches/include/linux/"* "$KERNEL_ROOT/common/include/linux/"
+        
+        # Apply SUSFS patch
+        cp $SUSFS4KSU/kernel_patches/50_add_susfs_in_gki-${{ inputs.android_version }}-${{ inputs.kernel_version }}.patch ./
+        patch -p1 < 50_add_susfs_in_gki-${{ inputs.android_version }}-${{ inputs.kernel_version }}.patch || true
+        
+        # Apply SUSFS integration to SukiSU
+        cd "$KERNEL_ROOT/KernelSU"  # Assuming SukiSU creates this directory
+        cp "$SUSFS4KSU/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch" ./
+        patch -p1 < 10_enable_susfs_for_ksu.patch || true
+        
+        # Copy SUSFS integration files
+        if [ -d "$SUSFS4KSU/kernel_patches/KernelSU/kernel" ]; then
+          cp -rf "$SUSFS4KSU/kernel_patches/KernelSU/kernel/"* ./
+        fi
+        ;;
           KSU)
             SUSFS_VERSION="2.0.0"
             cd "$KERNEL_ROOT/KernelSU"
@@ -518,6 +549,8 @@ jobs:
         CONFIG_KSU=y
         CONFIG_KSU_SUSFS=y
 
+          
+
         # Mountify Support
         CONFIG_TMPFS_XATTR=y
         CONFIG_TMPFS_POSIX_ACL=y
@@ -554,6 +587,15 @@ jobs:
         CONFIG_IP_SET_HASH_NETPORT=y
         CONFIG_IP_SET_HASH_NETIFACE=y
         CONFIG_IP_SET_LIST_SET=y
+
+        # Konfigurasi lainnya...
+        CONFIG_KPROBES=y
+        CONFIG_HAVE_KPROBES=y
+        CONFIG_KPROBE_EVENTS=y
+        CONFIG_OVERLAY_FS=y
+        CONFIG_TMPFS_XATTR=y
+        CONFIG_TMPFS_POSIX_ACL=y
+    
         
         EOF
 
