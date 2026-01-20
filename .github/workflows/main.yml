@@ -63,6 +63,11 @@ on:
         description: "Build All LTS Kernels"
         type: boolean
         default: false
+      apply_performance_patches:
+        description: 'Apply Performance Patches'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   build-a12-5-10:
