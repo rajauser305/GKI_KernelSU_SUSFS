@@ -30,6 +30,10 @@ on:
       build_bypass:
         required: true
         type: boolean
+      apply_performance_patches:
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   build-gki:
@@ -516,7 +520,7 @@ jobs:
         esac
 
     - name: Apply Performance Patches
-      if: false
+      if: ${{ inputs.apply_performance_patches }}
       working-directory: ${{ env.KERNEL_ROOT }}/common
       run: |
         MIN_VERSION="5.16"
