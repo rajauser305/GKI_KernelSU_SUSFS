@@ -521,7 +521,7 @@ jobs:
         
     - name: Apply Performance Patches
       if: ${{ inputs.apply_performance_patches }}
-      m working-directory: ${{ env.KERNEL_ROOT }}/common
+      working-directory: ${{ env.KERNEL_ROOT }}/common
       run: |
         MIN_VERSION="5.16"
         cp "$KERNEL_PATCHES/common/optimized_mem_operations.patch" ./
