@@ -920,7 +920,7 @@ jobs:
          perl -i -0777 -pe 's/(.*)echo "\$res"/$1echo "\$res-Wild-Hakan-'"$KERNEL_TIMESTAMP"'"/s' ./common/scripts/setlocalversion
          ;;
          *)
-         perl -i -0777 -pe 's/(.*)echo "\$res"/$1echo "\$res-🚀-MIMODUI-ZORN-🤖-"/s' ./common/scripts/setlocalversion
+         perl -i -0777 -pe 's/(.*)echo "\$res"/$1echo "\$res-MIModUI-ZORN-"/s' ./common/scripts/setlocalversion
          ;;
          esac
          else
@@ -1054,7 +1054,7 @@ jobs:
           # 8. Tampilkan preview versi kernel nanti
           echo ""
           echo "=== Expected kernel version format ==="
-          echo "Sebelum: 6.1.124-android14-11-🚀-MIMODUI-ZORN-🤖-BUILD-BY@DEADZONE"
+          echo "Sebelum: 6.1.124-android14-11-MIMODUI-ZORN-BUILD-BY@DEADZONE"
           echo "Sesudah: 6.1.124--BUILD-BY@DEADZONE"
 
     - name: Set Build Environment Variables
@@ -1223,5 +1223,6 @@ jobs:
         path: patch-rejects/
         if-no-files-found: ignore
         compression-level: 9
+
 
 # End of workflow
