@@ -81,12 +81,12 @@ on:
       custom_build_user:
         required: false
         type: string
-        default: "FUCK-YOU"
+        default: ""
         description: "Custom build user name"
       custom_build_host:
         required: false
         type: string
-        default: "NETANYAHU"
+        default: ""
         description: "Custom build host name"
 
        
