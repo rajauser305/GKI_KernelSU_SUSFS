@@ -68,6 +68,27 @@ on:
         required: false
         type: boolean
         default: false
+      custom_kernel_version:
+        required: false
+        type: string
+        default: ""
+        description: "Custom kernel version (e.g., 6.1.200, 6.1.300)"
+      custom_kernel_name:
+        required: false
+        type: string
+        default: ""
+        description: "Custom kernel name/identifier"
+      custom_build_user:
+        required: false
+        type: string
+        default: "FUCK-YOU"
+        description: "Custom build user name"
+      custom_build_host:
+        required: false
+        type: string
+        default: "NETANYAHU"
+        description: "Custom build host name"
+
        
 
 jobs:
