@@ -68,6 +68,12 @@ on:
         required: false
         type: boolean
         default: false
+       # --- TAMBAH INPUT BARU INI ---
+      build_note:
+        description: 'Catatan atau Nama untuk Build (Opsional)'
+        required: false
+        type: string
+        default: ''
 
 jobs:
   build-a12-5-10:
