@@ -600,6 +600,10 @@ jobs:
         CONFIG_KSU=y
         CONFIG_KSU_SUSFS=y
 
+        # KPatch Next Support
+        CONFIG_KALLSYMS=y
+        CONFIG_KALLSYMS_ALL=y
+
         # Konfigurasi khusus berdasarkan KSU variant
         if [[ "${{ inputs.ksu_variant }}" == "MamboSU-SUSFS" ]]; then
          cat >> "${{ env.DEFCONFIG }}" << 'EOF'
