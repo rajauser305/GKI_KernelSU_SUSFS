@@ -68,8 +68,18 @@ on:
         required: false
         type: boolean
         default: false
-      
-       
+      enable_additional_governors:
+        required: false
+        type: boolean
+        default: false
+      enable_battery_optimizations:
+        required: false
+        type: boolean
+        default: false
+      enable_network_optimizations:
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   build-a12-5-10:
