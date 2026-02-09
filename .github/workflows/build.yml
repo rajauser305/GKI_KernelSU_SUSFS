@@ -767,16 +767,14 @@ jobs:
     - name: Add Sound and Audio Optimizations
       if: true
       working-directory: ${{ env.KERNEL_ROOT }}
-      run: true
-        # Audio optimizations
-        echo "CONFIG_SND=y" >> "${{ env.DEFCONFIG }}"
-        echo "CONFIG_SND_HWDEP=y" >> "${{ env.DEFCONFIG }}"
-        echo "CONFIG_SND_RAWMIDI=y" >> "${{ env.DEFCONFIG }}"
-        echo "CONFIG_SND_COMPRESS_OFFLOAD=y" >> "${{ env.DEFCONFIG }}"
-        echo "CONFIG_SND_JACK=y" >> "${{ env.DEFCONFIG }}"
-
-        # High quality audio
-        echo "CONFIG_SND_HDA_PREALLOC_SIZE=64" >> "${{ env.DEFCONFIG }}"
+      run: 
+       # Audio optimizations
+       echo "CONFIG_SND=y" >> "${{ env.DEFCONFIG }}"
+       echo "CONFIG_SND_HWDEP=y" >> "${{ env.DEFCONFIG }}"
+       echo "CONFIG_SND_RAWMIDI=y" >> "${{ env.DEFCONFIG }}"
+       echo "CONFIG_SND_COMPRESS_OFFLOAD=y" >> "${{ env.DEFCONFIG }}"
+       echo "CONFIG_SND_JACK=y" >> "${{ env.DEFCONFIG }}"
+       echo "CONFIG_SND_HDA_PREALLOC_SIZE=64" >> "${{ env.DEFCONFIG }}"
 
     - name: Add BBG
       if: false
