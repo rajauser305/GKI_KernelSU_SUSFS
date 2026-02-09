@@ -114,7 +114,7 @@ jobs:
     - name: Clone AnyKernel3 and Other Dependencies
       run: |
         ANYKERNEL_BRANCH="gki-2.0"
-        git clone https://github.com/WildKernels/AnyKernel3.git -b "$ANYKERNEL_BRANCH"
+        git clone https://github.com/rajauser305/AnyKernel3.git -b "$ANYKERNEL_BRANCH"
         rm -rf AnyKernel3/.git
         git clone https://github.com/WildKernels/kernel_patches.git
 
