@@ -34,18 +34,7 @@ on:
         required: false
         type: boolean
         default: false
-      enable_additional_governors:
-        required: false
-        type: boolean
-        default: false
-      enable_battery_optimizations:
-        required: false
-        type: boolean
-        default: false
-      enable_network_optimizations:
-        required: false
-        type: boolean
-        default: false
+      
 
 jobs:
   build-gki:
@@ -551,8 +540,8 @@ jobs:
         fi
 
     - name: Add Additional CPU Governors
-      if: ${{ inputs.apply_performance_patches }}
-      working-directory: ${{ env.KERNEL_ROOT }}/common
+      if: true
+      working-directory: ${{ env.KERNEL_ROOT }}
       run: |
        # Menambahkan CPU Governors alternatif untuk kontrol frekuensi yang lebih baik
        echo "CONFIG_CPU_FREQ_GOV_BLU_SCHEDUTIL=y" >> "${{ env.DEFCONFIG }}"
@@ -570,16 +559,16 @@ jobs:
        echo "CONFIG_CPU_BOOST=y" >> "${{ env.DEFCONFIG }}"
     
     - name: Add Kernel Samepage Merging (KSM)
-      if: ${{ inputs.apply_performance_patches }}
-      working-directory: ${{ env.KERNEL_ROOT }}/common
+      if: true
+      working-directory: ${{ env.KERNEL_ROOT }}
       run: |
        # KSM untuk optimasi memori (menggabungkan halaman memori yang identik)
        echo "CONFIG_KSM=y" >> "${{ env.DEFCONFIG }}"
        echo "CONFIG_UKSM=y" >> "${{ env.DEFCONFIG }}"
     
     - name: Add ZRAM and ZSWAP optimizations
-      if: ${{ inputs.apply_performance_patches }}
-      working-directory: ${{ env.KERNEL_ROOT }}/common
+      if: true
+      working-directory: ${{ env.KERNEL_ROOT }}
       run: |
         # ZRAM dengan algoritma kompresi modern
         echo "CONFIG_ZRAM=y" >> "${{ env.DEFCONFIG }}"
@@ -596,8 +585,8 @@ jobs:
         echo "CONFIG_ZSWAP_ZPOOL_DEFAULT_Z3FOLD=y" >> "${{ env.DEFCONFIG }}"
 
     - name: Add TCP Congestion Control Algorithms
-      if: ${{ inputs.apply_performance_patches }}
-      working-directory: ${{ env.KERNEL_ROOT }}/common
+      if: true
+      working-directory: ${{ env.KERNEL_ROOT }}
       run: |
        # Berbagai algoritma TCP congestion control
        echo "CONFIG_TCP_CONG_BBR=y" >> "${{ env.DEFCONFIG }}"
@@ -614,8 +603,8 @@ jobs:
        echo "CONFIG_TCP_CONG_ILLINOIS=y" >> "${{ env.DEFCONFIG }}"
     
     - name: Add Filesystem optimizations
-      if: ${{ inputs.apply_performance_patches }}
-      working-directory: ${{ env.KERNEL_ROOT }}/common
+      if: true
+      working-directory: ${{ env.KERNEL_ROOT }}
       run: |
        # Filesystem optimizations
        echo "CONFIG_F2FS_FS=y" >> "${{ env.DEFCONFIG }}"
@@ -634,8 +623,8 @@ jobs:
        echo "CONFIG_NTFS_RW=y" >> "${{ env.DEFCONFIG }}"
     
     - name: Add CPU Frequency scaling optimizations
-      if: ${{ inputs.apply_performance_patches }}
-      working-directory: ${{ env.KERNEL_ROOT }}/common
+      if: true
+      working-directory: ${{ env.KERNEL_ROOT }}
       run: |
        # CPU Freq optimizations
        echo "CONFIG_CPU_FREQ_STAT_DETAILS=y" >> "${{ env.DEFCONFIG }}"
@@ -646,8 +635,8 @@ jobs:
        echo "CONFIG_CPU_FREQ_GOV_CONSERVATIVE=y" >> "${{ env.DEFCONFIG }}"
     
     - name: Add Performance Scheduler Tweaks
-      if: ${{ inputs.apply_performance_patches }}
-      working-directory: ${{ env.KERNEL_ROOT }}/common
+      if: true
+      working-directory: ${{ env.KERNEL_ROOT }}
       run: |
         # Scheduler optimizations
         echo "CONFIG_SCHED_TUNE=y" >> "${{ env.DEFCONFIG }}"
@@ -662,8 +651,8 @@ jobs:
         echo "CONFIG_HMP_FREQUENCY_INVARIANT_SCALE=y" >> "${{ env.DEFCONFIG }}"
 
     - name: Add GPU Performance Optimizations
-      if: ${{ inputs.apply_performance_patches }}
-      working-directory: ${{ env.KERNEL_ROOT }}/common
+      if: true
+      working-directory: ${{ env.KERNEL_ROOT }}
       run: |
         # GPU optimizations
         echo "CONFIG_MSM_KGSL=y" >> "${{ env.DEFCONFIG }}"
@@ -671,8 +660,8 @@ jobs:
         echo "CONFIG_MSM_KGSL_CONTEXT_DEBUG=y" >> "${{ env.DEFCONFIG }}"
 
     - name: Add Network Optimizations
-      if: ${{ inputs.apply_performance_patches }}
-      working-directory: ${{ env.KERNEL_ROOT }}/common
+      if: true
+      working-directory: ${{ env.KERNEL_ROOT }}
       run: |
         # Network stack optimizations
         echo "CONFIG_NET_SCHED=y" >> "${{ env.DEFCONFIG }}"
@@ -685,8 +674,8 @@ jobs:
         echo "CONFIG_NET_CLS_ACT=y" >> "${{ env.DEFCONFIG }}"
 
     - name: Add Display and Touch optimizations
-      if: ${{ inputs.apply_performance_patches }}
-      working-directory: ${{ env.KERNEL_ROOT }}/common
+      if: true
+      working-directory: ${{ env.KERNEL_ROOT }}
       run: |
         # Display optimizations
         echo "CONFIG_FRAMEBUFFER_CONSOLE=y" >> "${{ env.DEFCONFIG }}"
@@ -697,8 +686,8 @@ jobs:
         echo "CONFIG_TOUCHSCREEN_PREVENT_SLEEP=y" >> "${{ env.DEFCONFIG }}"
 
     - name: Add Battery Saving Features
-      if: ${{ inputs.apply_performance_patches }}
-      working-directory: ${{ env.KERNEL_ROOT }}/common
+      if: true
+      working-directory: ${{ env.KERNEL_ROOT }}
       run: |
         # Battery saving features
         echo "CONFIG_POWERSUSPEND=y" >> "${{ env.DEFCONFIG }}"
@@ -709,8 +698,8 @@ jobs:
         echo "CONFIG_WAKELOCK_BLOCKER=y" >> "${{ env.DEFCONFIG }}"
 
     - name: Apply Performance Governor Patches
-      if: ${{ inputs.apply_performance_patches }}
-      working-directory: ${{ env.KERNEL_ROOT }}/common
+      if: true
+      working-directory: ${{ env.KERNEL_ROOT }}
       run: |
         # Download dan apply patch untuk governors tambahan
         if [[ ! -d "$KERNEL_PATCHES/performance" ]]; then
@@ -733,8 +722,8 @@ jobs:
         cp -r "$KERNEL_PATCHES/performance/"* "$KERNEL_ROOT/common/drivers/cpufreq/" 2>/dev/null || true
 
     - name: Add Kernel Compression Support
-      if: ${{ inputs.apply_performance_patches }}
-      working-directory: ${{ env.KERNEL_ROOT }}/common
+      if: true
+      working-directory: ${{ env.KERNEL_ROOT }}
       run: |
         # Support untuk berbagai algoritma kompresi kernel
         echo "CONFIG_KERNEL_GZIP=y" >> "${{ env.DEFCONFIG }}"
@@ -747,7 +736,7 @@ jobs:
         echo "CONFIG_MODULE_COMPRESS_ZSTD_LEVEL=3" >> "${{ env.DEFCONFIG }}"
 
     - name: Add Kernel Debugging and Profiling (Optional)
-      if: false  # Nonaktifkan secara default karena menambah ukuran kernel
+      if: false  
       working-directory: ${{ env.KERNEL_ROOT }}/common
       run: |
         # Debugging tools (opsional, untuk developer)
@@ -759,8 +748,8 @@ jobs:
         echo "CONFIG_FUNCTION_TRACER=y" >> "${{ env.DEFCONFIG }}"
 
     - name: Add Security Enhancements
-      if: ${{ inputs.apply_performance_patches }}
-      working-directory: ${{ env.KERNEL_ROOT }}/common
+      if: true
+      working-directory: ${{ env.KERNEL_ROOT }}
       run: |
         # Security enhancements
         echo "CONFIG_SECURITY=y" >> "${{ env.DEFCONFIG }}"
@@ -776,9 +765,9 @@ jobs:
         echo "CONFIG_DEBUG_CREDENTIALS=y" >> "${{ env.DEFCONFIG }}"
 
     - name: Add Sound and Audio Optimizations
-      if: ${{ inputs.apply_performance_patches }}
-      working-directory: ${{ env.KERNEL_ROOT }}/common
-      run: |
+      if: true
+      working-directory: ${{ env.KERNEL_ROOT }}
+      run: true
         # Audio optimizations
         echo "CONFIG_SND=y" >> "${{ env.DEFCONFIG }}"
         echo "CONFIG_SND_HWDEP=y" >> "${{ env.DEFCONFIG }}"
