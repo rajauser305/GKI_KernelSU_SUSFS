@@ -68,6 +68,7 @@ on:
         required: false
         type: boolean
         default: false
+        
 jobs:
   build-a12-5-10:
     if: inputs.build_a12_5_10
