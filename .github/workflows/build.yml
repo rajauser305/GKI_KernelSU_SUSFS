@@ -133,6 +133,59 @@ jobs:
 
         repo --trace sync -c -j$(nproc --all) --fail-fast --no-tags --force-sync --no-clone-bundle 
 
+
+    - name: 🚨 FORCE REMOVE -android14-11 (HARD RESET)
+      working-directory: ${{ env.KERNEL_ROOT }}
+      run: |
+        set -eux
+        echo "### HARD RESET: REMOVE ANDROID VERSION SUFFIX ###"
+
+        # 1. Hapus semua file localversion* (fisik)
+        find common -type f -name 'localversion*' -delete
+        echo "✓ localversion files deleted"
+
+        # 2. Hapus EXTRAVERSION dari Makefile, set ke kosong total
+        if [ -f common/Makefile ]; then
+         sed -i '/^EXTRAVERSION[[:space:]]*=/d' common/Makefile
+         echo -e "\n# Force empty EXTRAVERSION\nEXTRAVERSION =" >> common/Makefile
+         echo "✓ EXTRAVERSION = (empty) forced"
+        fi
+
+        # 3. Hapus CONFIG_LOCALVERSION dari defconfig, set ke ""
+        DEF="common/arch/arm64/configs/gki_defconfig"
+        if [ -f "$DEF" ]; then
+         sed -i '/^CONFIG_LOCALVERSION=/d' "$DEF"
+         echo 'CONFIG_LOCALVERSION=""' >> "$DEF"
+         echo "✓ CONFIG_LOCALVERSION=\"\""
+        fi
+
+        # 4. Bersihkan build.config.gki dari LOCALVERSION
+        if [ -f common/build.config.gki ]; then
+         sed -i '/^LOCALVERSION=/d' common/build.config.gki
+         echo 'LOCALVERSION=' >> common/build.config.gki
+         echo "✓ LOCALVERSION= in build.config.gki"
+        fi
+
+        # 5. Paksa LOCALVERSION environment kosong
+        echo "LOCALVERSION=" >> $GITHUB_ENV
+        export LOCALVERSION=""
+
+        # 6. Bersihkan sisa-sisa di file lain (agresif)
+        grep -rl --include="*.c" --include="*.h" --include="Makefile" --include="*.sh" \
+             --include="*.bzl" --include="*.config" "android14-11" common/ 2>/dev/null | while read f; do
+         echo "Cleaning: $f"
+         sed -i 's/-android14-11//g; s/android14-11//g' "$f"
+        done
+
+        # 7. Verifikasi akhir
+        echo "### VERIFICATION ###"
+        if grep -r "android14-11" common/ 2>/dev/null | head -5; then
+         echo "❌ FAILED: still found android14-11"
+         exit 1
+        else
+         echo "✅ SUCCESS: no android14-11 remains"
+        fi
+
     - name: 🧹 Permanently Remove -android14-11 from Kernel Version
       working-directory: ${{ env.KERNEL_ROOT }}
       run: |
