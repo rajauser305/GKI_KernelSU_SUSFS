@@ -131,7 +131,73 @@ jobs:
           sed -i "s/\"${FORMATTED_BRANCH}\"/\"deprecated\/${FORMATTED_BRANCH}\"/g" $DEFAULT_MANIFEST_PATH
         fi
 
-        repo --trace sync -c -j$(nproc --all) --fail-fast --no-tags --force-sync --no-clone-bundle
+        repo --trace sync -c -j$(nproc --all) --fail-fast --no-tags --force-sync --no-clone-bundle 
+
+    - name: 🧹 Permanently Remove -android14-11 from Kernel Version
+      working-directory: ${{ env.KERNEL_ROOT }}
+      run: |
+          set -eux
+          echo "=== PERMANENTLY REMOVING -android14-11 FROM KERNEL VERSION ==="
+
+          # 1. Bersihkan CONFIG_LOCALVERSION di defconfig
+          DEFCONFIG="common/arch/arm64/configs/gki_defconfig"
+          if [ -f "$DEFCONFIG" ]; then
+           sed -i '/^CONFIG_LOCALVERSION=/d' "$DEFCONFIG"
+           echo 'CONFIG_LOCALVERSION=""' >> "$DEFCONFIG"
+           echo "✓ CONFIG_LOCALVERSION emptied"
+          fi
+
+          # 2. Hapus EXTRAVERSION dari Makefile
+          if [ -f "common/Makefile" ]; then
+           sed -i '/^EXTRAVERSION[[:space:]]*=/d' "common/Makefile"
+           echo "" >> "common/Makefile"
+           echo "EXTRAVERSION =" >> "common/Makefile"
+           echo "✓ EXTRAVERSION cleared"
+          fi
+
+          # 3. Hapus semua file localversion*
+           find common -type f -name "localversion*" -delete
+           echo "✓ localversion files removed"
+
+          # 4. Bersihkan script setlocalversion
+          if [ -f "common/scripts/setlocalversion" ]; then
+           # Backup asli
+           cp common/scripts/setlocalversion common/scripts/setlocalversion.bak
+           # Hapus semua kemunculan -android14-11 dan android14-11
+           sed -i 's/-android14-11//g' common/scripts/setlocalversion
+           sed -i 's/android14-11//g' common/scripts/setlocalversion
+           # Paksa LOCALVERSION kosong dari dalam script
+           sed -i '1i unset LOCALVERSION' common/scripts/setlocalversion
+           sed -i '2i export LOCALVERSION=' common/scripts/setlocalversion
+           echo "✓ setlocalversion cleaned"
+          fi
+
+          # 5. Bersihkan version.c
+          if [ -f "common/init/version.c" ]; then
+           sed -i 's/".*-android14-11/"/g' common/init/version.c
+           sed -i 's/android14-11//g' common/init/version.c
+          fi
+
+          # 6. Bersihkan build.config.gki
+          if [ -f "common/build.config.gki" ]; then
+           sed -i 's/-android14-11//g' common/build.config.gki
+          fi
+
+          # 7. Bersihkan file konfigurasi dan turunan lain
+          find common \( -name ".config" -o -name "*.cmd" \) -exec sed -i 's/-android14-11//g' {} + 2>/dev/null || true
+
+          # 8. Environment variable untuk build
+           echo "LOCALVERSION=" >> $GITHUB_ENV
+
+          echo "=== VERIFICATION ==="
+          if grep -r --include="Makefile" --include="*.c" --include="*.h" --include="*.sh" --include="*.bzl" --include="*.config" -l "android14-11" common/ 2>/dev/null | head -5; then
+           echo "⚠️  Warning: still found android14-11, forcing final cleanup..."
+           find common -type f -exec sed -i 's/-android14-11//g' {} \;
+           find common -type f -exec sed -i 's/android14-11//g' {} \;
+           else
+           echo "✅ No remaining android14-11 found."
+          fi
+          echo "=== DONE ==="
 
     - name: Extract Sublevel and Set File Name
       run: |
