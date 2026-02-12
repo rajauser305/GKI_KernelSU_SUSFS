@@ -1061,6 +1061,51 @@ jobs:
           echo "Sebelum: 6.1.124-android14-11-FUCK-YOU-TRUMP-FUCK-YOU@NETANYAHU"
           echo "Sesudah: 6.1.124-FUCK-YOU-TRUMP-FUCK-YOU@NETANYAHU"
 
+    - name: Force Remove Android Version String from Kernel Release
+      working-directory: ${{ env.KERNEL_ROOT }}
+      run: |
+          echo "=== FORCE REMOVE ANDROID VERSION STRING FROM KERNEL RELEASE ==="
+
+          # 1. Set CONFIG_LOCALVERSION to empty in defconfig
+          DEFCONFIG_FILE="${{ env.DEFCONFIG }}"
+          if grep -q "^CONFIG_LOCALVERSION=" "$DEFCONFIG_FILE"; then
+           sed -i 's/^CONFIG_LOCALVERSION=.*/CONFIG_LOCALVERSION=""/' "$DEFCONFIG_FILE"
+           else
+           echo 'CONFIG_LOCALVERSION=""' >> "$DEFCONFIG_FILE"
+          fi
+
+          # 2. Clear EXTRAVERSION in Makefile
+          if [ -f "common/Makefile" ]; then
+           sed -i '/^EXTRAVERSION =/d' common/Makefile
+           echo 'EXTRAVERSION =' >> common/Makefile
+          fi
+
+          # 3. Remove any localversion files
+          find common -name "localversion*" -type f -delete
+          find common -name "*.local" -type f -delete
+
+          # 4. Aggressively remove -android14-11 from setlocalversion script
+          if [ -f "common/scripts/setlocalversion" ]; then
+          # Hapus dari semua echo dan variable
+          sed -i 's/-android14-11//g' common/scripts/setlocalversion
+          sed -i 's/android14-11//g' common/scripts/setlocalversion
+          sed -i 's/\(scm_version.*\)-android14-11/\1/g' common/scripts/setlocalversion
+          # Paksa LOCALVERSION kosong di dalam script
+          echo "unset LOCALVERSION" >> common/scripts/setlocalversion
+          echo "export LOCALVERSION=" >> common/scripts/setlocalversion
+          fi
+
+          # 5. Force LOCALVERSION environment variable to empty
+          echo "LOCALVERSION=" >> $GITHUB_ENV
+
+          # 6. Bersihkan juga version.c
+          if [ -f "common/init/version.c" ]; then
+          sed -i 's/".*-android14-11/"/g' common/init/version.c
+          sed -i 's/android14-11//g' common/init/version.c
+          fi
+
+          echo "✓ Force removal completed"
+
     - name: Set Build Environment Variables
       working-directory: ${{ env.KERNEL_ROOT }}
       run: |
