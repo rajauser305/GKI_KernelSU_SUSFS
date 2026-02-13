@@ -293,6 +293,13 @@ jobs:
               curl -LSs "https://raw.githubusercontent.com/rsuntk/KernelSU/main/kernel/setup.sh" | bash -s main
             fi
             ;;
+          ReSukiSU)
+            if [[ -n "${{ inputs.ksu_commit }}" ]]; then
+              curl -LSs "https://raw.githubusercontent.com/Kingfinik98/ReSukiSU/refs/heads/main/kernel/setup.sh" | bash -s "${{ inputs.ksu_commit }}"
+            else
+              curl -LSs "https://raw.githubusercontent.com/Kingfinik98/ReSukiSU/refs/heads/main/kernel/setup.sh" | bash -s main
+            fi
+            ;;
           MamboSU)
             if [[ -n "${{ inputs.ksu_commit }}" ]]; then
               curl -LSs "https://raw.githubusercontent.com/yougotme101/KernelSU/refs/heads/master/kernel/setup.sh" | bash -s "${{ inputs.ksu_commit }}"
