@@ -559,38 +559,35 @@ jobs:
             ;;
 
           ReSukiSU)
-             echo "Applying SUSFS for ReSukiSU..."
-             # Clone SUSFS4KSU
-             git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-${{ inputs.android_version }}-${{ inputs.kernel_version }}
+            echo "Applying SUSFS for ReSukiSU..."
+            # JANGAN clone lagi! Langsung gunakan $SUSFS4KSU
+            cd "$KERNEL_ROOT/common"
+            cp "$SUSFS4KSU/kernel_patches/fs/"* "$KERNEL_ROOT/common/fs/"
+            cp "$SUSFS4KSU/kernel_patches/include/linux/"* "$KERNEL_ROOT/common/include/linux/"
 
-             # Apply kernel patches
-             cd "$KERNEL_ROOT/common"
-             cp "$SUSFS4KSU/kernel_patches/fs/"* "$KERNEL_ROOT/common/fs/"
-             cp "$SUSFS4KSU/kernel_patches/include/linux/"* "$KERNEL_ROOT/common/include/linux/"
+            # Apply SUSFS patch
+            cp $SUSFS4KSU/kernel_patches/50_add_susfs_in_gki-${{ inputs.android_version }}-${{ inputs.kernel_version }}.patch ./
+            patch -p1 < 50_add_susfs_in_gki-${{ inputs.android_version }}-${{ inputs.kernel_version }}.patch || true
 
-             # Apply SUSFS patch
-             cp $SUSFS4KSU/kernel_patches/50_add_susfs_in_gki-${{ inputs.android_version }}-${{ inputs.kernel_version }}.patch ./
-             patch -p1 < 50_add_susfs_in_gki-${{ inputs.android_version }}-${{ inputs.kernel_version }}.patch || true
+            # Cari direktori hasil setup ReSukiSU
+            if [ -d "$KERNEL_ROOT/ReSukiSU" ]; then
+               cd "$KERNEL_ROOT/ReSukiSU"
+            elif [ -d "$KERNEL_ROOT/KernelSU" ]; then
+               cd "$KERNEL_ROOT/KernelSU"
+            else
+               echo "Tidak dapat menemukan direktori ReSukiSU atau KernelSU"
+               exit 1
+            fi
 
-             # Cari direktori hasil setup ReSukiSU (mungkin ReSukiSU atau KernelSU)
-             if [ -d "$KERNEL_ROOT/ReSukiSU" ]; then
-                cd "$KERNEL_ROOT/ReSukiSU"
-             elif [ -d "$KERNEL_ROOT/KernelSU" ]; then
-                cd "$KERNEL_ROOT/KernelSU"
-             else
-                echo "Tidak dapat menemukan direktori ReSukiSU atau KernelSU"
-                exit 1
-             fi
+            # Apply SUSFS integration patch
+            cp "$SUSFS4KSU/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch" ./
+            patch -p1 < 10_enable_susfs_for_ksu.patch || true
 
-             # Apply SUSFS integration patch
-             cp "$SUSFS4KSU/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch" ./
-             patch -p1 < 10_enable_susfs_for_ksu.patch || true
-
-             # Copy SUSFS integration files if any
-             if [ -d "$SUSFS4KSU/kernel_patches/KernelSU/kernel" ]; then
+            # Copy SUSFS integration files if any
+            if [ -d "$SUSFS4KSU/kernel_patches/KernelSU/kernel" ]; then
                cp -rf "$SUSFS4KSU/kernel_patches/KernelSU/kernel/"* ./
-               fi
-             ;;
+            fi
+           ;;
             
         MamboSU)
            echo "MamboSU without SUSFS selected, skipping SUSFS patches."
