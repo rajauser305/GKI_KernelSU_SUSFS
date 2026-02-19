@@ -717,12 +717,6 @@ jobs:
         # Add O2 config
           echo "📦 设置 O2..."
           echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> ./common/arch/arm64/configs/gki_defconfig
-
-         # add adios
-           echo "📦 正在设置 ADIOS..."
-           echo "CONFIG_MQ_IOSCHED_ADIOS=y" >> ./common/arch/arm64/configs/gki_defconfig
-           echo "CONFIG_MQ_IOSCHED_DEFAULT_ADIOS=y" >> ./common/arch/arm64/configs/gki_defconfig
-        
          # Tambahan konfigurasi umum
          cat >> "${{ env.DEFCONFIG }}" << 'EOF'
          # TMPFS Support
