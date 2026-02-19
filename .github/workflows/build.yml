@@ -712,6 +712,12 @@ jobs:
          CONFIG_OVERLAY_FS=y
          EOF
         fi
+
+
+        # Add O2 config
+          echo "📦 设置 O2..."
+          echo "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y" >> ./common/arch/arm64/configs/gki_defconfig
+          
     
          # Tambahan konfigurasi umum
          cat >> "${{ env.DEFCONFIG }}" << 'EOF'
