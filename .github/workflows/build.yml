@@ -569,27 +569,42 @@ jobs:
             ;;
          VortexSU)
             SUSFS_VERSION="2.0.0"
-             echo "Applying SUSFS for VortexSU..."
-             cd "$KERNEL_ROOT/VortexSU"  # Asumsi direktori hasil integrasi adalah "VortexSU"
-             # 1. Terapkan patch KernelSU untuk SUSFS (umum untuk banyak varian)
-             if [ -f "$SUSFS4KSU/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch" ]; then
-               cp "$SUSFS4KSU/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch" ./
-               patch -p1 < 10_enable_susfs_for_ksu.patch || echo "Warning: SUSFS KernelSU patch failed"
-             fi
-  
-             # 2. Copy file kernel SUSFS ke direktori common (sudah dilakukan di luar case, 
-             #    tapi kita pastikan di sini karena bagian ini spesifik untuk varian)
-               cd "$KERNEL_ROOT/common"
-               cp "$SUSFS4KSU/kernel_patches/fs/"* "$KERNEL_ROOT/common/fs/" 2>/dev/null || true
-               cp "$SUSFS4KSU/kernel_patches/include/linux/"* "$KERNEL_ROOT/common/include/linux/" 2>/dev/null || true
-  
-             # 3. Terapkan patch SUSFS utama
-               cp $SUSFS4KSU/kernel_patches/50_add_susfs_in_gki-${{ inputs.android_version }}-${{ inputs.kernel_version }}.patch ./
-               patch -p1 < 50_add_susfs_in_gki-${{ inputs.android_version }}-${{ inputs.kernel_version }}.patch || echo "Warning: Main SUSFS patch failed"
-  
-             # 4. (Opsional) Terapkan patch perbaikan khusus versi, jika ada dari repository kernel_patches.
-             #    Anda bisa mengadaptasi bagian dari case MamboSU-SUSFS atau Next.
-            ;;
+            echo "Applying SUSFS for VortexSU..."
+
+            # Deteksi otomatis folder KernelSU (prioritas) atau VortexSU
+            if [ -d "$KERNEL_ROOT/KernelSU" ]; then
+               KSU_DIR="$KERNEL_ROOT/KernelSU"
+               echo "✓ Ditemukan direktori KernelSU di: $KSU_DIR"
+            elif [ -d "$KERNEL_ROOT/VortexSU" ]; then
+               KSU_DIR="$KERNEL_ROOT/VortexSU"
+               echo "✓ Ditemukan direktori VortexSU di: $KSU_DIR"
+            else
+               echo "⚠️ Tidak dapat menemukan direktori KernelSU/VortexSU, melewati patch khusus varian."
+               KSU_DIR=""
+            fi
+            
+            # Patch khusus KernelSU jika folder ditemukan
+            if [ -n "$KSU_DIR" ]; then
+              cd "$KSU_DIR"
+               if [ -f "$SUSFS4KSU/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch" ]; then
+                 cp "$SUSFS4KSU/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch" ./
+                 patch -p1 < 10_enable_susfs_for_ksu.patch || echo "⚠️ Patch SUSFS KernelSU gagal, lanjutkan..."
+              fi
+            fi
+
+            # Kembali ke common untuk patch kernel SUSFS
+            cd "$KERNEL_ROOT/common"
+
+            # Copy file SUSFS kernel
+            cp "$SUSFS4KSU/kernel_patches/fs/"* "$KERNEL_ROOT/common/fs/" 2>/dev/null || true
+            cp "$SUSFS4KSU/kernel_patches/include/linux/"* "$KERNEL_ROOT/common/include/linux/" 2>/dev/null || true
+
+            # Terapkan patch utama SUSFS
+            cp $SUSFS4KSU/kernel_patches/50_add_susfs_in_gki-${{ inputs.android_version }}-${{ inputs.kernel_version }}.patch ./
+            patch -p1 < 50_add_susfs_in_gki-${{ inputs.android_version }}-${{ inputs.kernel_version }}.patch || echo "⚠️ Patch SUSFS utama gagal, lanjutkan..."
+
+            # (Opsional) Tambahkan patch perbaikan versi jika diperlukan, seperti di case WKSU
+           ;;
         MamboSU)
            echo "MamboSU without SUSFS selected, skipping SUSFS patches."
            ;;
