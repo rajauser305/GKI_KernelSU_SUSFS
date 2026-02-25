@@ -315,6 +315,16 @@ jobs:
             fi
             ;;
          esac
+
+    - name: Debug - List Kernel Root Contents
+      if: inputs.ksu_variant == 'VortexSU'
+      working-directory: ${{ env.KERNEL_ROOT }}
+      run: |
+         echo "📁 Daftar isi KERNEL_ROOT:"
+         ls -la
+         echo "🔍 Mencari direktori KernelSU atau VortexSU:"
+         find . -maxdepth 2 -type d -name "KernelSU" -o -name "VortexSU" -o -name "*KSU*" | head -10
+         
     - name: Clone & Apply SUSFS Patches for KernelSU Variants
       run: |
         SUSFS_BRANCH="gki-${{ inputs.android_version }}-${{ inputs.kernel_version }}"
