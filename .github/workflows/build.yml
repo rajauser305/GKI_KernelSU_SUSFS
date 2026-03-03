@@ -1020,6 +1020,41 @@ jobs:
           echo "scripts/mkcompile_h tidak ditemukan!"
          exit 1
          fi
+         
+      - name: 🔧 Ubah user & host secara permanen
+        working-directory: ${{ env.KERNEL_ROOT }}/common
+        run: |
+         # 1. Set environment variables
+         BUILD_DATE="$(date +'%a %b %d %H:%M:%S %Z %Y')"
+         echo "KBUILD_BUILD_TIMESTAMP=$BUILD_DATE" >> $GITHUB_ENV
+         echo "KBUILD_BUILD_USER=FUCK-YOU" >> $GITHUB_ENV
+         echo "KBUILD_BUILD_HOST=NETANYAHU" >> $GITHUB_ENV
+
+          # 2. Modifikasi langsung Makefile
+         if [ -f "Makefile" ]; then
+           sed -i "s/^KBUILD_BUILD_USER.*/KBUILD_BUILD_USER := FUCK-YOU/" Makefile
+           sed -i "s/^KBUILD_BUILD_HOST.*/KBUILD_BUILD_HOST := NETANYAHU/" Makefile
+         if ! grep -q "^KBUILD_BUILD_USER" Makefile; then
+           echo "KBUILD_BUILD_USER := FUCK-YOU" >> Makefile
+         fi
+         if ! grep -q "^KBUILD_BUILD_HOST" Makefile; then
+          echo "KBUILD_BUILD_HOST := NETANYAHU" >> Makefile
+         fi
+         fi
+
+         # 3. Modifikasi init/version.c
+         if [ -f "init/version.c" ]; then
+          sed -i 's/"build-user"/"FUCK-YOU"/g' init/version.c
+          sed -i 's/"build-host"/"NETANYAHU"/g' init/version.c
+         fi
+
+         # 4. Patch scripts/mkcompile_h (opsional, untuk jaga-jaga)
+         if [ -f "scripts/mkcompile_h" ]; then
+          sed -i 's/build-user/FUCK-YOU/g' scripts/mkcompile_h
+          sed -i 's/build-host/NETANYAHU/g' scripts/mkcompile_h
+         fi
+
+          echo "✅ User/host telah diubah menjadi FUCK-YOU@NETANYAHU"
       
 
       # ==================== 编译内核 ====================
