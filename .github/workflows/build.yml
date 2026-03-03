@@ -955,6 +955,14 @@ jobs:
             echo "未找到目标文件，跳过: $f"
           fi
 
+      # ====================  Kustomisasi user & host ====================
+      - name: Setel user & host untuk kompilasi
+        run: |
+            echo "KBUILD_BUILD_USER=${{ inputs.build_user }}" >> $GITHUB_ENV
+            echo "KBUILD_BUILD_HOST=${{ inputs.build_host }}" >> $GITHUB_ENV
+            echo "Kernel bakal dikompilasi dengan user: ${{ inputs.build_user }}@${{ inputs.build_host }}"
+
+
       # ==================== 编译内核 ====================
       # 使用重试机制编译内核，超时后自动重试
       - name: 构建——如出错为该KSU暂时未同步SUSFS代码或编译时错误(等待该KSU仓库修复)
