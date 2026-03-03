@@ -51,11 +51,11 @@ on:
       build_user:
         required: false
         type: string
-        default: "build-user"
+        default: "FUCK-YOU"
       build_host:
         required: false
         type: string
-        default: "build-host"
+        default: "NETANYAHU"
 
       # ==================== 功能开关 ====================
       use_zram:
