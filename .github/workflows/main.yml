@@ -67,12 +67,12 @@ on:
          description: "自定义编译用户 (默认为 build-user)"
          required: false
          type: string
-         default: "build-user"
+         default: "FUCK-YOU"
       build_host:
          description: "自定义编译主机 (默认为 build-host)"
          required: false
          type: string
-         default: "build-host"
+         default: "NETANYAHU"
       
       # ==================== 功能开关 ====================
       use_zram:
@@ -165,6 +165,8 @@ jobs:
       kernelsu_branch: ${{ inputs.kernelsu_branch }}
       version: ${{ inputs.version }}
       build_time: ${{ inputs.build_time || '' }}
+      build_user: ${{ INPUTS.FUCK-YOU }}
+      build_host: ${{ INPUTS.NETANYAHU }}
       use_zram: ${{ inputs.use_zram }}
       use_bbg: ${{ inputs.use_bbg }}
       use_kpm: ${{ inputs.use_kpm }}
