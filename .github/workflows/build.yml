@@ -107,6 +107,8 @@ jobs:
           echo "KSU 变体      : ${{ inputs.ksu_variant }}"
           echo "KSU 分支      : ${{ inputs.ksu_branch }}"
           echo "构建时间      : ${{ inputs.build_time }}"
+          echo "Build User    : ${{ inputs.build_user }}"
+          echo "Build Host    : ${{ inputs.build_host }}"
           echo "SUSFS 状态    : ${{ inputs.enable_susfs }}"
           echo "ZRAM 增强     : ${{ inputs.use_zram }}"
           echo "BBG 补丁      : ${{ inputs.use_bbg }}"
