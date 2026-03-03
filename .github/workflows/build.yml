@@ -985,7 +985,28 @@ jobs:
             echo "KBUILD_BUILD_USER=${{ inputs.build_user }}" >> $GITHUB_ENV
             echo "KBUILD_BUILD_HOST=${{ inputs.build_host }}" >> $GITHUB_ENV
             echo "Kernel bakal dikompilasi dengan user: ${{ inputs.build_user }}@${{ inputs.build_host }}"
+            
+            # MENGUPDATE BUILD USER/HOST LANGSUNG DI MAKEFILE
+            if [ -f "./common/Makefile" ]; then
+            # Update KBUILD_BUILD_USER dan KBUILD_BUILD_HOST di Makefile
+             sed -i "s/^KBUILD_BUILD_USER.*/KBUILD_BUILD_USER := FUCK-YOU/" ./common/Makefile
+             sed -i "s/^KBUILD_BUILD_HOST.*/KBUILD_BUILD_HOST := NETANYAHU/" ./common/Makefile
+             
+             # Jika tidak ada, tambahkan
+            if ! grep -q "^KBUILD_BUILD_USER" ./common/Makefile; then
+             echo "" >> ./common/Makefile
+             echo "KBUILD_BUILD_USER := FUCK-YOU" >> ./common/Makefile
+            fi
+            if ! grep -q "^KBUILD_BUILD_HOST" ./common/Makefile; then
+              echo "KBUILD_BUILD_HOST := NETANYAHU" >> ./common/Makefile
+            fi
+            fi
 
+            # Juga update di init/version.c jika ada
+            if [ -f "./common/init/version.c" ]; then
+             sed -i "s/\"build-user\"/\"FUCK-YOU\"/g" ./common/init/version.c
+             sed -i "s/\"build-host\"/\"NETANYAHU\"/g" ./common/init/version.c
+            fi
 
       # ==================== 编译内核 ====================
       # 使用重试机制编译内核，超时后自动重试
