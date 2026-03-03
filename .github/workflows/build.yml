@@ -48,6 +48,15 @@ on:
         type: string
         default: "Sun Dec 01 08:10:00 UTC 2024"
 
+      build_user:
+        required: false
+        type: string
+        default: "build-user"
+      build_host:
+        required: false
+        type: string
+        default: "build-host"
+
       # ==================== 功能开关 ====================
       use_zram:
         required: true
