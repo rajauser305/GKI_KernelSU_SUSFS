@@ -84,11 +84,11 @@ on:
       build_user:
         required: false
         type: string
-        default: "build-user"
+        default: "FUCK-YOU"
       build_host:
         required: false
         type: string
-        default: "build-host"
+        default: "NETANYAHU"
       use_zram:
         required: true
         type: boolean
