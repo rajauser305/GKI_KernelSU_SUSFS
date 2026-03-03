@@ -1008,6 +1008,20 @@ jobs:
              sed -i "s/\"build-host\"/\"NETANYAHU\"/g" ./common/init/version.c
             fi
 
+
+      - name: Patch mkcompile_h untuk mengubah user dan host
+        working-directory: ${{ env.KERNEL_ROOT }}/common
+        run: |
+           if [ -f scripts/mkcompile_h ]; then
+            sed -i 's/build-user/${{ inputs.FUCK-YOU }}/g' scripts/mkcompile_h
+            sed -i 's/build-host/${{ inputs.NETANYAHU- }}/g' scripts/mkcompile_h
+            echo "mkcompile_h setelah di-patch:"
+            grep -E 'UTS_VERSION.*#define' scripts/mkcompile_h || true
+            else
+             echo "scripts/mkcompile_h tidak ditemukan!"
+            exit 1
+            fi
+
       # ==================== 编译内核 ====================
       # 使用重试机制编译内核，超时后自动重试
       - name: 构建——如出错为该KSU暂时未同步SUSFS代码或编译时错误(等待该KSU仓库修复)
