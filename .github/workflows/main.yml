@@ -62,6 +62,19 @@ on:
         type: string
         default: "Sun Dec 01 08:10:00 UTC 2024"
         required: false
+
+     # ====================  Kustomisasi user & host ====================
+      build_user:
+         required: false
+         type: string
+         default: "build-user"
+         description: "Nama user yang akan muncul di versi kernel"
+      build_host:
+         required: false
+         type: string
+         default: "build-host"
+         description: "Nama host yang akan muncul di versi kernel"
+        
       # ==================== 功能开关 ====================
       use_zram:
         description: "启用 ZRAM 增强算法"
