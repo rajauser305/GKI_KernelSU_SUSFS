@@ -907,6 +907,19 @@ jobs:
           CONFIG_KSU_SUSFS_SUS_MAP=y
           EOF
 
+      - name: Change Kernel Name
+        working-directory: ${{ env.KERNEL_ROOT }}
+        run: |
+         # SET BUILD USER DAN HOST LANGSUNG KE MAKE FILE
+          echo "Setting build user: FUCK-YOU"
+          echo "Setting build host: NETANYAHU"
+
+         # Simpan ke environment untuk build step berikutnya
+         
+          echo "KBUILD_BUILD_USER=FUCK-YOU" >> $GITHUB_ENV
+          echo "KBUILD_BUILD_HOST=NETANYAHU" >> $GITHUB_ENV
+
+
       # ==================== 配置内核名称 ====================
       - name: 配置内核名称
         working-directory: ${{ env.KERNEL_ROOT }}
