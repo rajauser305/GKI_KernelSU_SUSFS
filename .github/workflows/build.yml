@@ -1084,44 +1084,7 @@ jobs:
           rm -rf Image
           mv oImage Image
 
-      - name: 🔧 Patch langsung user/host di file Image (ekstrim)
-        run: |
-         # Tentukan lokasi Image
-         if [ -f "$KERNEL_ROOT/bazel-bin/common/kernel_aarch64/Image" ]; then
-          IMAGE="$KERNEL_ROOT/bazel-bin/common/kernel_aarch64/Image"
-         elif [ -f "$KERNEL_ROOT/out/${{ inputs.android_version }}-${{ inputs.kernel_version }}/dist/Image" ]; then
-          IMAGE="$KERNEL_ROOT/out/${{ inputs.android_version }}-${{ inputs.kernel_version }}/dist/Image"
-         else
-          echo "Image tidak ditemukan!"
-          exit 1
-         fi
-
-          echo "Memproses file: $IMAGE"
-          cp "$IMAGE" "$IMAGE.bak"  # backup
-
-          # Cari offset string "build-user" dan "build-host"
-          OFFSET_USER=$(strings -t d "$IMAGE" | grep "build-user" | head -1 | awk '{print $1}')
-          OFFSET_HOST=$(strings -t d "$IMAGE" | grep "build-host" | head -1 | awk '{print $1}')
-
-          if [ -z "$OFFSET_USER" ] || [ -z "$OFFSET_HOST" ]; then
-           echo "String 'build-user' atau 'build-host' tidak ditemukan! Mungkin sudah berubah?"
-           exit 1
-          fi
-
-           echo "Ditemukan 'build-user' di offset $OFFSET_USER"
-           echo "Ditemukan 'build-host' di offset $OFFSET_HOST"
-
-          # Ganti "build-user" (10 karakter) dengan "FUCK-YOU" (7 karakter) + 3 null
-           printf "FUCK-YOU" | dd of="$IMAGE" bs=1 seek=$OFFSET_USER count=7 conv=notrunc
-           printf "\x00\x00\x00" | dd of="$IMAGE" bs=1 seek=$((OFFSET_USER+7)) count=3 conv=notrunc
-
-          # Ganti "build-host" (10 karakter) dengan "NETANYAHU" (9 karakter) + 1 null
-           printf "NETANYAHU" | dd of="$IMAGE" bs=1 seek=$OFFSET_HOST count=9 conv=notrunc
-           printf "\x00" | dd of="$IMAGE" bs=1 seek=$((OFFSET_HOST+9)) count=1 conv=notrunc
-
-           echo "✅ Penggantian selesai!"
-           echo "Verifikasi:"
-           strings "$IMAGE" | grep -E 'FUCK-YOU|NETANYAHU' || echo "Tidak ditemukan, mungkin gagal."
+      
 
       # ==================== 准备 Boot 镜像 ====================
       # 复制编译产物到工作目录
