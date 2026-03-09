@@ -762,36 +762,8 @@ jobs:
           cp $SUKISU_PATCHES/other/zram/zram_patch/${{ inputs.kernel_version }}/lz4k_oplus.patch ./
           patch -p1 -F 3 < lz4k_oplus.patch || true
               
-      - name: Terapkan Patch BBRv3
-        working-directory: ${{ env.KERNEL_ROOT }}/common
-        run: |
-            echo "Mengunduh patch BBRv3..."
-            PATCH_URL="https://raw.githubusercontent.com/rajauser305/GKI_KernelSU_SUSFS/test3/kernel-patches/bbrv3/bbrv3.patch"
-            PATCH_FILE="/tmp/bbrv3.patch"
-
-            # Unduh patch dengan curl, jika gagal hentikan build
-            if ! curl -L -f -o "$PATCH_FILE" "$PATCH_URL"; then
-             echo "::error::Gagal mengunduh patch BBRv3 dari $PATCH_URL"
-             exit 1
-            fi
-
-             echo "Menerapkan patch BBRv3 ke kernel..."
-             # Coba terapkan patch. Jika sudah pernah diterapkan, dry-run akan gagal.
-            if patch -p1 --dry-run -f < "$PATCH_FILE" > /dev/null 2>&1; then
-             # Dry-run berhasil, terapkan patch sebenarnya
-             patch -p1 < "$PATCH_FILE"
-             echo "✅ Patch BBRv3 berhasil diterapkan."
-            else
-            # Dry-run gagal, kemungkinan patch sudah diterapkan atau konflik
-            echo "⚠️ Patch BBRv3 sudah diterapkan sebelumnya atau terjadi konflik. Melewati penerapan."
-            # Jika Anda ingin build berhenti saat gagal, hapus baris di atas dan aktifkan baris berikut:
-            # echo "::error::Patch BBRv3 gagal diterapkan. Periksa kompatibilitas kernel."
-            # exit 1
-            fi
-
-            # Bersihkan file patch
-            rm -f "$PATCH_FILE"
-            echo "Selesai memproses patch BBRv3."
+      
+      
 
       # ==================== 修复 6.6 WiFi/蓝牙兼容性（三星 + 小米） ====================
       # 合并三星与小米修复，并采用幂等写法避免重复追加导致脏变更
@@ -938,45 +910,7 @@ jobs:
           CONFIG_KSU_SUSFS_SUS_MAP=y
           EOF
 
-          # ==================== Tambahkan Universal Performance Tuning ====================
-      - name: Tambahkan Universal Performance Tuning
-        run: |
-           echo "⚙️ Adding Universal Performance Tuning"
-           printf "%s\n" \
-             "# Universal Performance Tuning" \
-             "CONFIG_TMPFS_XATTR=y" \
-             "CONFIG_TMPFS_POSIX_ACL=y" \
-             "CONFIG_HZ_300=y" \
-             "CONFIG_HZ=300" \
-             "CONFIG_CPU_FREQ=y" \
-             "CONFIG_CPU_FREQ_GOV_SCHEDUTIL=y" \
-             "CONFIG_CPU_FREQ_GOV_ONDEMAND=y" \
-             "# Better I/O & filesystem performance" \
-             "CONFIG_SWAP=y" \
-             "CONFIG_BLK_DEV_ZRAM=y" \
-             "CONFIG_ZRAM_DEF_COMP_LZ4=y" \
-             "CONFIG_ZRAM_WRITEBACK=y" \
-             "CONFIG_ZRAM_MEMORY_TRACKING=y" \
-             "# Modern I/O scheduler" \
-             "CONFIG_MQ_IOSCHED_DEADLINE=y" \
-             "CONFIG_DEFAULT_DEADLINE=y" \
-             "# F2FS optimizations" \
-             "CONFIG_F2FS_FS=y" \
-             "CONFIG_F2FS_FS_XATTR=y" \
-             "CONFIG_F2FS_FS_POSIX_ACL=y" \
-             "CONFIG_F2FS_FS_COMPRESSION=y" \
-             "# Memory management improvements" \
-             "CONFIG_LRU_GEN=y" \
-             "CONFIG_LRU_GEN_ENABLED=y" \
-             "# Networking extras" \
-             "CONFIG_IP_NF_TARGET_TTL=y" \
-             "CONFIG_NET_SCH_FQ=y" \
-             "CONFIG_TCP_CONG_ADVANCED=y" \
-             "CONFIG_DEFAULT_BBR=y" \
-             "CONFIG_TCP_CONG_BBR=y" \
-             "CONFIG_TCP_CONG_WESTWOOD=y" \
-             "CONFIG_IP6_NF_TARGET_HL=y" \
-             "CONFIG_IP6_NF_MATCH_HL=y" >> "$DEFCONFIG"
+          
 
       - name: Change Kernel Name
         working-directory: ${{ env.KERNEL_ROOT }}
